@@ -1,6 +1,6 @@
 import * as express from "express";
-import {Request, Response} from "express";
-import {createConnection} from "typeorm/browser";
+import {Request, response, Response} from "express";
+import {createConnection} from "typeorm";
 import {Post} from "./entity/Post";
 
 createConnection().then(connection => {
@@ -20,7 +20,8 @@ createConnection().then(connection => {
         // here we will have logic to return post by id
         // @ts-ignore
         const results = await postRepository.findOne(req.params.id)
-        return res.send(results)
+        /*return res.send(results)*/
+        res.send("id: " + req.params["id"])
     });
 
     app.post("/posts", async function(req: Request, res: Response) {

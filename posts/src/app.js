@@ -37,9 +37,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var express = require("express");
-var browser_1 = require("typeorm/browser");
+var typeorm_1 = require("typeorm");
 var Post_1 = require("./entity/Post");
-(0, browser_1.createConnection)().then(function (connection) {
+(0, typeorm_1.createConnection)().then(function (connection) {
     var postRepository = connection.getRepository(Post_1.Post);
     // create and setup express app
     var app = express();
