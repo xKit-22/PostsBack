@@ -62,7 +62,9 @@ var Post_1 = require("./entity/Post");
             var results;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, postRepository.findOne(req.params.id)];
+                    case 0: return [4 /*yield*/, postRepository.findOneBy({
+                            id: +req.params.id
+                        })];
                     case 1:
                         results = _a.sent();
                         return [2 /*return*/, res.send(results)];
@@ -91,7 +93,9 @@ var Post_1 = require("./entity/Post");
             var post, results;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, postRepository.findOne(req.params.id)];
+                    case 0: return [4 /*yield*/, postRepository.findOneBy({
+                            id: +req.params.id
+                        })];
                     case 1:
                         post = _a.sent();
                         postRepository.merge(post, req.body);
@@ -116,12 +120,14 @@ var Post_1 = require("./entity/Post");
             });
         });
     });
-    app.get("/posts/:authorId", function (req, res) {
+    app.get("/posts/author/:authorId", function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
             var results;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, postRepository.findOne(req.params.authorId)];
+                    case 0: return [4 /*yield*/, postRepository.findOneBy({
+                            authorId: +req.params.authorId
+                        })];
                     case 1:
                         results = _a.sent();
                         return [2 /*return*/, res.send(results)];
@@ -131,21 +137,58 @@ var Post_1 = require("./entity/Post");
     });
     app.get("/posts/:id/like", function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var post, likedPost;
+            var post, likedPost, results;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, postRepository.findOne(req.params.id)];
+                    case 0: return [4 /*yield*/, postRepository.findOneBy({
+                            id: +req.params.id
+                        })];
                     case 1:
                         post = _a.sent();
                         likedPost = post.likesAmount++;
                         console.log(likedPost);
-                        return [2 /*return*/];
+                        // @ts-ignore
+                        postRepository.merge(post, likedPost);
+                        return [4 /*yield*/, postRepository.save(post)];
+                    case 2:
+                        results = _a.sent();
+                        return [2 /*return*/, res.send(results)];
                 }
             });
         });
     });
     app.get("/posts/:id/unlike", function (req, res) {
-        // -like
+        return __awaiter(this, void 0, void 0, function () {
+            var post, likedPost, results;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, postRepository.findOneBy({
+                            id: +req.params.id
+                        })];
+                    case 1:
+                        post = _a.sent();
+                        likedPost = post.likesAmount--;
+                        console.log(likedPost);
+                        // @ts-ignore
+                        postRepository.merge(post, likedPost);
+                        return [4 /*yield*/, postRepository.save(post)];
+                    case 2:
+                        results = _a.sent();
+                        return [2 /*return*/, res.send(results)];
+                }
+            });
+        });
     });
     app.listen(3000, function () { return console.log("start"); });
 });
+/*
+fetch('http://localhost:3000/posts', {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json, text/plain, *!/!*',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({"text":"text", "picture":"picture", "likesAmount":10, "authorId":"12", "dateOfCreation":"12.03.22"})
+}).then(res => res.json())
+    .then(res => console.log(res));
+*/

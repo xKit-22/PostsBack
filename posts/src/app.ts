@@ -1,5 +1,5 @@
 import * as express from "express";
-import {Request, response, Response} from "express";
+import {Request, Response} from "express";
 import {createConnection} from "typeorm";
 import {Post} from "./entity/Post";
 
@@ -18,10 +18,10 @@ createConnection().then(connection => {
 
     app.get("/posts/:id", async function(req: Request, res: Response) {
         // here we will have logic to return post by id
-        // @ts-ignore
-        const results = await postRepository.findOne(req.params.id)
-        /*return res.send(results)*/
-        res.send("id: " + req.params["id"])
+        const results = await postRepository.findOneBy({
+            id: +req.params.id
+        })
+        return res.send(results)
     });
 
     app.post("/posts", async function(req: Request, res: Response) {
@@ -33,8 +33,9 @@ createConnection().then(connection => {
 
     app.put("/posts/:id", async function(req: Request, res: Response) {
         // here we will have logic to update a post by a given post id
-        // @ts-ignore
-        const post = await postRepository.findOne(req.params.id)
+        const post = await postRepository.findOneBy({
+            id: +req.params.id
+        })
         postRepository.merge(post, req.body)
         const results = await postRepository.save(post)
         return res.send(results)
@@ -42,35 +43,56 @@ createConnection().then(connection => {
 
     app.delete("/posts/:id", async function(req: Request, res: Response) {
         // here we will have logic to delete a post by a given post id
-        // @ts-ignore
         const results = await postRepository.delete(req.params.id)
         return res.send(results)
     });
 
-    app.get("/posts/:authorId", async function(req: Request, res: Response) {
+    app.get("/posts/author/:authorId", async function(req: Request, res: Response) {
         // here we will have logic to return user`s posts by user id
-        // @ts-ignore
-        const results = await postRepository.findOne(req.params.authorId)
+        const results = await postRepository.findOneBy({
+            authorId: +req.params.authorId
+        })
         return res.send(results)
     });
 
     app.get("/posts/:id/like", async function(req: Request, res: Response){
         // +like
-        // @ts-ignore
-        const post = await postRepository.findOne(req.params.id)
-
+        const post = await postRepository.findOneBy({
+            id: +req.params.id
+        })
         const likedPost = post.likesAmount++
         console.log(likedPost)
-        /*const likedPost = post.likesAmount++*/
-/*        postRepository.merge(post, likedPost)
+        // @ts-ignore
+        postRepository.merge(post, likedPost)
         const results = await postRepository.save(post)
-        return res.send(results)*/
+        return res.send(results)
     })
 
-    app.get("/posts/:id/unlike", function(req: Request, res: Response){
+    app.get("/posts/:id/unlike", async function(req: Request, res: Response){
         // -like
+        const post = await postRepository.findOneBy({
+            id: +req.params.id
+        })
+        const likedPost = post.likesAmount--
+        console.log(likedPost)
+        // @ts-ignore
+        postRepository.merge(post, likedPost)
+        const results = await postRepository.save(post)
+        return res.send(results)
     })
-
 
     app.listen(3000, () => console.log("start"))
 })
+
+
+/*
+fetch('http://localhost:3000/posts', {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json, text/plain, *!/!*',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({"text":"text", "picture":"picture", "likesAmount":10, "authorId":"12", "dateOfCreation":"12.03.22"})
+}).then(res => res.json())
+    .then(res => console.log(res));
+*/
