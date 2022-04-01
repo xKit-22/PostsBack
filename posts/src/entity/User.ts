@@ -21,9 +21,15 @@ export class User {
     subscriptionsAmount: number
 
     @Column()
-    allLikesAmount: number
+    allPostLikesAmount: number
 
     @Column()
     dateOfCreation: string
+
+    @Column()
+    userLogin: string
+
+    @Column()
+    userPassword: string
 
 }

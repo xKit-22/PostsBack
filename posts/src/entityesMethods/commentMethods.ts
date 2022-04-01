@@ -2,7 +2,6 @@ import * as express from "express";
 import {Request, Response} from "express";
 import {createConnection} from "typeorm";
 import {Comment} from "../entity/Comment";
-import postRouter from "./postMethods";
 
 const  commentRouter = express.Router();
 

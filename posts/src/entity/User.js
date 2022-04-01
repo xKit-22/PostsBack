@@ -41,11 +41,19 @@ var User = /** @class */ (function () {
     __decorate([
         (0, typeorm_1.Column)(),
         __metadata("design:type", Number)
-    ], User.prototype, "allLikesAmount", void 0);
+    ], User.prototype, "allPostLikesAmount", void 0);
     __decorate([
         (0, typeorm_1.Column)(),
         __metadata("design:type", String)
     ], User.prototype, "dateOfCreation", void 0);
+    __decorate([
+        (0, typeorm_1.Column)(),
+        __metadata("design:type", String)
+    ], User.prototype, "userLogin", void 0);
+    __decorate([
+        (0, typeorm_1.Column)(),
+        __metadata("design:type", String)
+    ], User.prototype, "userPassword", void 0);
     User = __decorate([
         (0, typeorm_1.Entity)()
     ], User);
