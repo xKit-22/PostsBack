@@ -129,7 +129,7 @@ var commentRouter = express.Router();
             var results;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, commentRepository.findOneBy({
+                    case 0: return [4 /*yield*/, commentRepository.findBy({
                             authorId: +req.params.authorId
                         })];
                     case 1:
@@ -194,3 +194,16 @@ exports.default = commentRouter;
     body: JSON.stringify({"text":"commentText1", "likesAmount":10, "authorId":12, "dateOfCreation":"12.03.22"})
 }).then(res => res.json())
     .then(res => console.log(res));*/
+/*fetch('http://localhost:3000/comments/2', {
+    method: 'PUT',
+    headers: {
+        'Accept': 'application/json, text/plain, *!/!*',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({"text":"commentText2UPD", "likesAmount":10, "authorId":12, "dateOfCreation":"12.03.22"})
+}).then(res => res.json())
+    .then(res => console.log(res))*/
+/*fetch('http://localhost:3000/comments/3', {
+    method: 'DELETE'
+}).then(res => res.json())
+    .then(res => console.log(res))*/

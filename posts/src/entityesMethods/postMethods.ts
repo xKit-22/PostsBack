@@ -48,7 +48,7 @@ createConnection().then(connection => {
     // here we will have logic to return user`s posts by user id
     postRouter.get("/author/:authorId", async function(req: Request, res: Response) {
 
-        const results = await postRepository.findOneBy({
+        const results = await postRepository.findBy({
             authorId: +req.params.authorId
         })
         return res.send(results)

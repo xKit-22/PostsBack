@@ -129,7 +129,7 @@ var postRouter = express.Router();
             var results;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, postRepository.findOneBy({
+                    case 0: return [4 /*yield*/, postRepository.findBy({
                             authorId: +req.params.authorId
                         })];
                     case 1:

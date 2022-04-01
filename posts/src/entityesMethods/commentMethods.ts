@@ -48,7 +48,7 @@ createConnection().then(connection => {
     //logic to return user`s comments by user id
     commentRouter.get("/author/:authorId", async function(req: Request, res: Response) {
 
-        const results = await commentRepository.findOneBy({
+        const results = await commentRepository.findBy({
             authorId: +req.params.authorId
         })
         return res.send(results)
