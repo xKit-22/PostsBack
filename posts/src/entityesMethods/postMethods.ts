@@ -81,3 +81,31 @@ createConnection().then(connection => {
 
 export default postRouter;
 
+
+/*
+fetch('http://localhost:3000/posts', {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json, text/plain, *!/!*',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({"text":"text", "picture":"picture", "likesAmount":10, "authorId":12, "dateOfCreation":"12.03.22"})
+}).then(res => res.json())
+    .then(res => console.log(res));
+*/
+
+/*fetch('http://localhost:3000/posts/2', {
+    method: 'PUT',
+    headers: {
+        'Accept': 'application/json, text/plain, *!/!*',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({"text":"textUPD", "picture":"pictureUPD", "likesAmount":12, "authorId":14, "dateOfCreation":"15.02.22"})
+}).then(res => res.json())
+    .then(res => console.log(res));*/
+
+/*fetch('http://localhost:3000/posts/2', {
+    method: 'DELETE'
+}).then(res => res.json())
+    .then(res => console.log(res))*/
+

@@ -41,7 +41,7 @@ var User = /** @class */ (function () {
     __decorate([
         (0, typeorm_1.Column)(),
         __metadata("design:type", Number)
-    ], User.prototype, "allPostLikesAmount", void 0);
+    ], User.prototype, "allLikesAmount", void 0);
     __decorate([
         (0, typeorm_1.Column)(),
         __metadata("design:type", String)

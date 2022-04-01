@@ -185,3 +185,12 @@ var commentRouter = express.Router();
     });
 });
 exports.default = commentRouter;
+/*fetch('http://localhost:3000/comments', {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json, text/plain, *!/!*',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({"text":"commentText1", "likesAmount":10, "authorId":12, "dateOfCreation":"12.03.22"})
+}).then(res => res.json())
+    .then(res => console.log(res));*/

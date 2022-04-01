@@ -167,8 +167,52 @@ var userRouter = express.Router();
             });
         });
     });
+    // +subscription
+    userRouter.get("/:id/addSubscription", function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var user, changeSubscription, results;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, userRepository.findOneBy({
+                            id: +req.params.id
+                        })];
+                    case 1:
+                        user = _a.sent();
+                        changeSubscription = user.subscriptionsAmount++;
+                        // @ts-ignore
+                        userRepository.merge(user, changeSubscription);
+                        return [4 /*yield*/, userRepository.save(user)];
+                    case 2:
+                        results = _a.sent();
+                        return [2 /*return*/, res.send(results)];
+                }
+            });
+        });
+    });
+    // -subscription
+    userRouter.get("/:id/removeSubscription", function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var user, changeSubscription, results;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, userRepository.findOneBy({
+                            id: +req.params.id
+                        })];
+                    case 1:
+                        user = _a.sent();
+                        changeSubscription = user.subscriptionsAmount--;
+                        // @ts-ignore
+                        userRepository.merge(user, changeSubscription);
+                        return [4 /*yield*/, userRepository.save(user)];
+                    case 2:
+                        results = _a.sent();
+                        return [2 /*return*/, res.send(results)];
+                }
+            });
+        });
+    });
     // +post
-    userRouter.get("/:id/addSubscriber", function (req, res) {
+    userRouter.get("/:id/addPost", function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
             var user, changePostsAmount, results;
             return __generator(this, function (_a) {
@@ -190,7 +234,7 @@ var userRouter = express.Router();
         });
     });
     // -post
-    userRouter.get("/:id/addSubscriber", function (req, res) {
+    userRouter.get("/:id/removePost", function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
             var user, changePostsAmount, results;
             return __generator(this, function (_a) {
@@ -213,3 +257,27 @@ var userRouter = express.Router();
     });
 });
 exports.default = userRouter;
+/*fetch('http://localhost:3000/users', {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json, text/plain, *!/!*',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({"nickname":"nickname1", "avatar":"avatar1", "postsAmount":10, "subscribersAmount":12,
+        "subscriptionsAmount":25, "allLikesAmount": 25, "dateOfCreation": "22.08.2015", "userLogin": "userLogin1", "userPassword": "userPassword1"})
+}).then(res => res.json())
+    .then(res => console.log(res));*/
+/*fetch('http://localhost:3000/users/1', {
+    method: 'PUT',
+    headers: {
+        'Accept': 'application/json, text/plain, *!/!*',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({"nickname":"nickname1UPD", "avatar":"avatar1UPD", "postsAmount":10, "subscribersAmount":12,
+        "subscriptionsAmount":25, "allLikesAmount": 25, "dateOfCreation": "22.08.2015", "userLogin": "userLogin1UPD", "userPassword": "userPassword1UPD"})
+}).then(res => res.json())
+    .then(res => console.log(res));*/
+/*fetch('http://localhost:3000/users/2', {
+    method: 'DELETE'
+}).then(res => res.json())
+    .then(res => console.log(res))*/

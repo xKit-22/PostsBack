@@ -2,8 +2,7 @@ import * as express from "express";
 import {Request, Response} from "express";
 import {createConnection} from "typeorm";
 import {User} from "../entity/User";
-import commentRouter from "./commentMethods";
-import postRouter from "./postMethods";
+
 
 const userRouter = express.Router();
 
@@ -71,8 +70,32 @@ createConnection().then(connection => {
         return res.send(results)
     })
 
+    // +subscription
+    userRouter.get("/:id/addSubscription", async function(req: Request, res: Response){
+        const user = await userRepository.findOneBy({
+            id: +req.params.id
+        })
+        const changeSubscription = user.subscriptionsAmount++
+        // @ts-ignore
+        userRepository.merge(user, changeSubscription)
+        const results = await userRepository.save(user)
+        return res.send(results)
+    })
+
+    // -subscription
+    userRouter.get("/:id/removeSubscription", async function(req: Request, res: Response){
+        const user = await userRepository.findOneBy({
+            id: +req.params.id
+        })
+        const changeSubscription = user.subscriptionsAmount--
+        // @ts-ignore
+        userRepository.merge(user, changeSubscription)
+        const results = await userRepository.save(user)
+        return res.send(results)
+    })
+
     // +post
-    userRouter.get("/:id/addSubscriber", async function(req: Request, res: Response){
+    userRouter.get("/:id/addPost", async function(req: Request, res: Response){
         const user = await userRepository.findOneBy({
             id: +req.params.id
         })
@@ -84,7 +107,7 @@ createConnection().then(connection => {
     })
 
     // -post
-    userRouter.get("/:id/addSubscriber", async function(req: Request, res: Response){
+    userRouter.get("/:id/removePost", async function(req: Request, res: Response){
         const user = await userRepository.findOneBy({
             id: +req.params.id
         })
@@ -97,3 +120,32 @@ createConnection().then(connection => {
 })
 
 export default userRouter
+
+
+
+/*fetch('http://localhost:3000/users', {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json, text/plain, *!/!*',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({"nickname":"nickname1", "avatar":"avatar1", "postsAmount":10, "subscribersAmount":12,
+        "subscriptionsAmount":25, "allLikesAmount": 25, "dateOfCreation": "22.08.2015", "userLogin": "userLogin1", "userPassword": "userPassword1"})
+}).then(res => res.json())
+    .then(res => console.log(res));*/
+
+/*fetch('http://localhost:3000/users/1', {
+    method: 'PUT',
+    headers: {
+        'Accept': 'application/json, text/plain, *!/!*',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({"nickname":"nickname1UPD", "avatar":"avatar1UPD", "postsAmount":10, "subscribersAmount":12,
+        "subscriptionsAmount":25, "allLikesAmount": 25, "dateOfCreation": "22.08.2015", "userLogin": "userLogin1UPD", "userPassword": "userPassword1UPD"})
+}).then(res => res.json())
+    .then(res => console.log(res));*/
+
+/*fetch('http://localhost:3000/users/2', {
+    method: 'DELETE'
+}).then(res => res.json())
+    .then(res => console.log(res))*/

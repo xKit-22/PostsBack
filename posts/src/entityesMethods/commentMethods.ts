@@ -83,3 +83,29 @@ createConnection().then(connection => {
 export default commentRouter;
 
 
+/*fetch('http://localhost:3000/comments', {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json, text/plain, *!/!*',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({"text":"commentText1", "likesAmount":10, "authorId":12, "dateOfCreation":"12.03.22"})
+}).then(res => res.json())
+    .then(res => console.log(res));*/
+
+/*fetch('http://localhost:3000/comments/2', {
+    method: 'PUT',
+    headers: {
+        'Accept': 'application/json, text/plain, *!/!*',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({"text":"commentText2UPD", "likesAmount":10, "authorId":12, "dateOfCreation":"12.03.22"})
+}).then(res => res.json())
+    .then(res => console.log(res))*/
+
+/*fetch('http://localhost:3000/comments/3', {
+    method: 'DELETE'
+}).then(res => res.json())
+    .then(res => console.log(res))*/
+
+
