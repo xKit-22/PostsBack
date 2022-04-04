@@ -42,7 +42,7 @@ var Post_1 = require("../entity/Post");
 var postRouter = express.Router();
 (0, typeorm_1.createConnection)().then(function (connection) {
     var postRepository = connection.getRepository(Post_1.Post);
-    // here we will have logic to return all posts
+    // logic to return all posts
     postRouter.get("/", function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
             var posts;
@@ -56,7 +56,7 @@ var postRouter = express.Router();
             });
         });
     });
-    // here we will have logic to return post by id
+    // logic to return post by id
     postRouter.get("/:id", function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
             var results;
@@ -72,7 +72,7 @@ var postRouter = express.Router();
             });
         });
     });
-    // here we will have logic to create and save a post
+    // logic to create and save a post
     postRouter.post("/", function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
             var post, results;
@@ -89,7 +89,7 @@ var postRouter = express.Router();
             });
         });
     });
-    // here we will have logic to update a post by a given post id
+    // logic to update a post by a given post id
     postRouter.put("/:id", function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
             var post, results;
@@ -109,7 +109,7 @@ var postRouter = express.Router();
             });
         });
     });
-    // here we will have logic to delete a post by a given post id
+    // logic to delete a post by a given post id
     postRouter.delete("/:id", function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
             var results;
@@ -123,7 +123,7 @@ var postRouter = express.Router();
             });
         });
     });
-    // here we will have logic to return user`s posts by user id
+    // logic to return user`s posts by user id
     postRouter.get("/author/:authorId", function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
             var results;

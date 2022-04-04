@@ -55,7 +55,7 @@ var User = /** @class */ (function () {
         __metadata("design:type", String)
     ], User.prototype, "userPassword", void 0);
     User = __decorate([
-        (0, typeorm_1.Entity)()
+        (0, typeorm_1.Entity)('users')
     ], User);
     return User;
 }());

@@ -13,8 +13,10 @@
   },
   "dependencies": {
     "@types/express": "^4.17.13",
+    "bcryptjs": "^2.4.3",
     "express": "^4.17.3",
     "mysql": "^2.18.1",
+    "pg": "^8.7.3",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.3.4"
   }
