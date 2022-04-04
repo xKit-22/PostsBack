@@ -4,6 +4,7 @@ import commentRouter from "./entityesMethods/commentMethods";
 import userRouter from "./entityesMethods/userMethods";
 import authRouter from "./entityesMethods/auth";
 
+require("dotenv").config()
 
 // create and setup express app
 const app = express()

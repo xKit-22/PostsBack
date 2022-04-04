@@ -5,6 +5,7 @@ var postMethods_1 = require("./entityesMethods/postMethods");
 var commentMethods_1 = require("./entityesMethods/commentMethods");
 var userMethods_1 = require("./entityesMethods/userMethods");
 var auth_1 = require("./entityesMethods/auth");
+require("dotenv").config();
 // create and setup express app
 var app = express();
 app.use(express.json());

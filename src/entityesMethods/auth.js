@@ -39,11 +39,50 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express = require("express");
 var typeorm_1 = require("typeorm");
 var User_1 = require("../entity/User");
+require("dotenv/config");
+var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
 var authRouter = express.Router();
+var jwtKey = 'dev-jwt';
 (0, typeorm_1.createConnection)().then(function (connection) {
     var userRepository = connection.getRepository(User_1.User);
     authRouter.post("/login", function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var candidate, passwordResult, token;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, userRepository.findOneBy({
+                            userLogin: req.body.userLogin
+                        })];
+                    case 1:
+                        candidate = _a.sent();
+                        if (candidate) {
+                            passwordResult = bcrypt.compareSync(req.body.userPassword, candidate.userPassword);
+                            if (passwordResult) {
+                                token = jwt.sign({
+                                    userLogin: candidate.userLogin,
+                                    id: candidate.id
+                                }, process.env.JWT_KEY, { expiresIn: '1h' });
+                                res.status(200).json({
+                                    token: "Bearer ".concat(token)
+                                });
+                            }
+                            else {
+                                res.status(401).json({
+                                    message: "Passwords didn't match"
+                                });
+                            }
+                        }
+                        else {
+                            //User not found
+                            res.status(404).json({
+                                message: "User with this login not found"
+                            });
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
     });
     //logic to registration of user
     authRouter.post('/register', function (req, res) {
@@ -88,6 +127,10 @@ var authRouter = express.Router();
                         return [2 /*return*/, res.send(results)];
                     case 6:
                         e_1 = _a.sent();
+                        res.status(500).json({
+                            success: false,
+                            message: e_1.message ? e_1.message : e_1
+                        });
                         return [3 /*break*/, 7];
                     case 7: return [2 /*return*/];
                 }
