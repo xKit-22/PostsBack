@@ -1,0 +1,11 @@
+{
+  "type": "postgres",
+  "host": "hattie.db.elephantsql.com",
+  "port": 5432,
+  "username": "drjfieem",
+  "password": "2WbeOfP1myqbTs4K5evRx6k-06awyT2Q",
+  "database": "drjfieem",
+  "entities": ["C:\\Users\\xKit\\WebstormProjects\\posts\\src\\entity\\*.js"],
+  "logging": true,
+  "synchronize": true
+}
