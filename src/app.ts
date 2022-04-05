@@ -2,7 +2,7 @@ import * as express from "express";
 import postRouter from "./entityesMethods/postMethods";
 import commentRouter from "./entityesMethods/commentMethods";
 import userRouter from "./entityesMethods/userMethods";
-import authRouter from "./entityesMethods/auth";
+import authRouter from "./authorization/auth";
 
 require("dotenv").config()
 
