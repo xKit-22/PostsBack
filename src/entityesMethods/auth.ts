@@ -7,7 +7,6 @@ import 'dotenv/config'
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs');
 const authRouter = express.Router();
-const jwtKey = 'dev-jwt'
 
 
 createConnection().then(connection => {
