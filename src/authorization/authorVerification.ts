@@ -3,17 +3,19 @@ import {User} from "../entity/User";
 import {Request, Response} from "express";
 import {createConnection} from "typeorm";
 import {Post} from "../entity/Post";
-import commentRouter from "../entityesMethods/commentMethods";
+import {Comment} from "../entity/Comment";
 
-const jwt = require('jsonwebtoken')
+import jwt from 'jsonwebtoken';
 const config = process.env.JWT_KEY
 
-createConnection().then(connection => {
+export default (req: Request, res: Response, next) => {
 
-    const userRepository = connection.getRepository(User)
-    const postRepository = connection.getRepository(Post)
+    createConnection().then(connection => {
 
-     const  verifyToken = (req: Request, res: Response, next) => {
+        const userRepository = connection.getRepository(User)
+        const postRepository = connection.getRepository(Post)
+        const commentRepository = connection.getRepository(Comment)
+
         const token = req.headers["x-access-token"]
 
         if(!token) {
@@ -23,32 +25,41 @@ createConnection().then(connection => {
             })
         }
 
-         jwt.verify (token, config, async (err, decoded) => {
+        jwt.verify (token, config, async (err, decoded) => {
+
             if(err){
                 res.status(500).json({
                     success: false,
                     message: "Token is invalid"
                 })
             }
+
             req.body.id = await decoded.id;
+
             const post = await postRepository.findOneBy({
-               authorId: +req.params.authorId
+                authorId: +req.params.authorId
+            })
+
+            const comment = await postRepository.findOneBy({
+                authorId: +req.params.authorId
             })
 
             const user = await userRepository.findOneBy({
-               id: decoded.id
+                id: decoded.id
             })
 
-             if (!(user.id == post.authorId)) {
-                 res.status(500).json({
-                     success: false,
-                     message: "No rights for this action"
-                 })
-             }else {
-                 next()
-             }
+            if (!(user.id == post.authorId) && !(user.id == comment.authorId)) {
+                res.status(500).json({
+                    success: false,
+                    message: "No rights for this action"
+                })
+            }else {
+                next()
+            }
         })
-    }
-})
+    })
+}
+
+
 
 

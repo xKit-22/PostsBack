@@ -11,9 +11,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 var typeorm_1 = require("typeorm");
+var Post_1 = require("./Post");
+var Comment_1 = require("./Comment");
+var typeorm_2 = require("typeorm");
 var User = /** @class */ (function () {
     function User() {
     }
+    User_1 = User;
+    var User_1;
     __decorate([
         (0, typeorm_1.PrimaryGeneratedColumn)(),
         __metadata("design:type", Number)
@@ -54,7 +59,20 @@ var User = /** @class */ (function () {
         (0, typeorm_1.Column)(),
         __metadata("design:type", String)
     ], User.prototype, "userPassword", void 0);
-    User = __decorate([
+    __decorate([
+        (0, typeorm_1.OneToMany)(function (type) { return Post_1.Post; }, function (post) { return post.user; }),
+        __metadata("design:type", Array)
+    ], User.prototype, "posts", void 0);
+    __decorate([
+        (0, typeorm_1.OneToMany)(function (type) { return Comment_1.Comment; }, function (comment) { return comment.user; }),
+        __metadata("design:type", Array)
+    ], User.prototype, "comments", void 0);
+    __decorate([
+        (0, typeorm_1.ManyToMany)(function (type) { return User_1; }),
+        (0, typeorm_2.JoinTable)(),
+        __metadata("design:type", Array)
+    ], User.prototype, "user", void 0);
+    User = User_1 = __decorate([
         (0, typeorm_1.Entity)('users')
     ], User);
     return User;

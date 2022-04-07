@@ -1,7 +1,7 @@
 import {Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany} from "typeorm";
 import {Post} from "./Post";
 import {Comment} from "./Comment";
-import {JoinTable} from "typeorm/browser";
+import {JoinTable} from "typeorm";
 
 @Entity('users')
 export class User {
