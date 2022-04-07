@@ -2,6 +2,7 @@ import * as express from "express";
 import {Request, Response} from "express";
 import {createConnection} from "typeorm";
 import {Post} from "../entity/Post";
+import authorVerification from "../authorization/authorVerification";
 
 const postRouter = express.Router();
 
@@ -30,7 +31,7 @@ createConnection().then(connection => {
     });
 
     // logic to update a post by a given post id
-    postRouter.put("/:id", async function(req: Request, res: Response) {
+    postRouter.put("/:id", authorVerification, async function(req: Request, res: Response) {
         const post = await postRepository.findOneBy({
             id: +req.params.id
         })
@@ -40,7 +41,7 @@ createConnection().then(connection => {
     });
 
     // logic to delete a post by a given post id
-    postRouter.delete("/:id", async function(req: Request, res: Response) {
+    postRouter.delete("/:id", authorVerification, async function(req: Request, res: Response) {
         const results = await postRepository.delete(req.params.id)
         return res.send(results)
     });

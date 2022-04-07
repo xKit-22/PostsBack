@@ -2,6 +2,7 @@ import * as express from "express";
 import {Request, Response} from "express";
 import {createConnection} from "typeorm";
 import {Comment} from "../entity/Comment";
+import authorVerification from "../authorization/authorVerification";
 
 const  commentRouter = express.Router();
 
@@ -30,7 +31,7 @@ createConnection().then(connection => {
     });
 
     // logic to update a comment by a given comment id
-    commentRouter.put("/:id", async function(req: Request, res: Response) {
+    commentRouter.put("/:id", authorVerification, async function(req: Request, res: Response) {
         const comment = await commentRepository.findOneBy({
             id: +req.params.id
         })
@@ -40,7 +41,7 @@ createConnection().then(connection => {
     });
 
     //logic to delete a comment by a given comment id
-    commentRouter.delete("/:id", async function(req: Request, res: Response) {
+    commentRouter.delete("/:id", authorVerification, async function(req: Request, res: Response) {
         const results = await commentRepository.delete(req.params.id)
         return res.send(results)
     });

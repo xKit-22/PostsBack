@@ -37,24 +37,37 @@ export default (req: Request, res: Response, next) => {
             req.body.id = await decoded.id;
 
             const post = await postRepository.findOneBy({
-                authorId: +req.params.authorId
+                id: +req.params.id
             })
 
             const comment = await postRepository.findOneBy({
-                authorId: +req.params.authorId
+                id: +req.params.id
             })
 
             const user = await userRepository.findOneBy({
                 id: decoded.id
             })
 
-            if (!(user.id == post.authorId) && !(user.id == comment.authorId)) {
-                res.status(500).json({
-                    success: false,
-                    message: "No rights for this action"
-                })
-            }else {
-                next()
+            if (post) {
+                if (!(user.id == post.authorId)) {
+                    res.status(500).json({
+                        success: false,
+                        message: "No rights for this action"
+                    })
+                }else {
+                    next()
+                }
+            }
+
+            if (comment) {
+                if (!(user.id == comment.authorId)) {
+                    res.status(500).json({
+                        success: false,
+                        message: "No rights for this action"
+                    })
+                }else {
+                    next()
+                }
             }
         })
     })
