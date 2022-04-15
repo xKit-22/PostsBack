@@ -39,6 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express = require("express");
 var typeorm_1 = require("typeorm");
 var User_1 = require("../entity/User");
+var bcrypt = require('bcryptjs');
 var userRouter = express.Router();
 (0, typeorm_1.createConnection)().then(function (connection) {
     var userRepository = connection.getRepository(User_1.User);
@@ -119,6 +120,41 @@ var userRouter = express.Router();
                     case 1:
                         results = _a.sent();
                         return [2 /*return*/, res.send(results)];
+                }
+            });
+        });
+    });
+    //logic to change a user`s password by a given user id
+    userRouter.put("/:id/changePassword", function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var user, salt, currentPassword, newPassword, passwordResult, changePassword, results;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, userRepository.findOneBy({
+                            id: +req.params.id
+                        })];
+                    case 1:
+                        user = _a.sent();
+                        salt = bcrypt.genSaltSync(10);
+                        currentPassword = user.userPassword;
+                        newPassword = req.body.userPassword;
+                        passwordResult = bcrypt.compareSync(newPassword, currentPassword);
+                        if (!!passwordResult) return [3 /*break*/, 3];
+                        user.userPassword = bcrypt.hashSync(newPassword, salt);
+                        changePassword = user.userPassword;
+                        // @ts-ignore
+                        userRepository.merge(user, changePassword);
+                        return [4 /*yield*/, userRepository.save(user)];
+                    case 2:
+                        results = _a.sent();
+                        return [2 /*return*/, res.send(results)];
+                    case 3:
+                        res.status(500).json({
+                            success: false,
+                            message: 'Enter a password different from the old one'
+                        });
+                        _a.label = 4;
+                    case 4: return [2 /*return*/];
                 }
             });
         });
@@ -275,6 +311,16 @@ exports.default = userRouter;
     },
     body: JSON.stringify({"nickname":"nickname1UPD", "avatar":"avatar1UPD", "postsAmount":10, "subscribersAmount":12,
         "subscriptionsAmount":25, "allLikesAmount": 25, "dateOfCreation": "22.08.2015", "userLogin": "userLogin1UPD", "userPassword": "userPassword1UPD"})
+}).then(res => res.json())
+    .then(res => console.log(res));*/
+//Password change test
+/*fetch('http://localhost:3000/users/1/changePassword', {
+    method: 'PUT',
+    headers: {
+        'Accept': 'application/json, text/plain, *!/!*',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({"userPassword": "changePassword"})
 }).then(res => res.json())
     .then(res => console.log(res));*/
 /*fetch('http://localhost:3000/users/2', {

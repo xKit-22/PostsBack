@@ -1,12 +1,17 @@
 import * as express from "express";
 import {Request, Response} from "express";
-import {createConnection} from "typeorm";
+import {createConnection, getRepository} from "typeorm";
 import {User} from "../entity/User";
-import 'dotenv/config'
+//import 'dotenv/config'
+import {Comment} from "../entity/Comment";
 
+require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs');
 const authRouter = express.Router();
+
+
+const secret = 'secret'
 
 
 createConnection().then(connection => {
@@ -26,7 +31,7 @@ createConnection().then(connection => {
                 const token = jwt.sign({
                     userLogin: candidate.userLogin,
                     id: candidate.id
-                },  process.env.JWT_KEY, {expiresIn: '1h'})
+                }, secret , {expiresIn: '1h'}) //process.env.JWT_KEY
 
                 res.status(200).json({
                     token: `Bearer ${token}`
@@ -86,3 +91,6 @@ createConnection().then(connection => {
 })
 
 export default authRouter
+
+
+//      http://localhost:3000/api/auth/login

@@ -39,159 +39,161 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express = require("express");
 var typeorm_1 = require("typeorm");
 var Comment_1 = require("../entity/Comment");
+var authorVerification_1 = require("../authorization/authorVerification");
 var commentRouter = express.Router();
-(0, typeorm_1.createConnection)().then(function (connection) {
-    var commentRepository = connection.getRepository(Comment_1.Comment);
-    //logic to return all comments
-    commentRouter.get("/", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var comments;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, commentRepository.find()];
-                    case 1:
-                        comments = _a.sent();
-                        return [2 /*return*/, res.json(comments)];
-                }
-            });
-        });
-    });
-    //logic to return comment by id
-    commentRouter.get("/:id", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, commentRepository.findOneBy({
-                            id: +req.params.id
-                        })];
-                    case 1:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    //logic to create and save a comment
-    commentRouter.post("/", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var comment, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, commentRepository.create(req.body)];
-                    case 1:
-                        comment = _a.sent();
-                        return [4 /*yield*/, commentRepository.save(comment)];
-                    case 2:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    // logic to update a comment by a given comment id
-    commentRouter.put("/:id", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var comment, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, commentRepository.findOneBy({
-                            id: +req.params.id
-                        })];
-                    case 1:
-                        comment = _a.sent();
-                        commentRepository.merge(comment, req.body);
-                        return [4 /*yield*/, commentRepository.save(comment)];
-                    case 2:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    //logic to delete a comment by a given comment id
-    commentRouter.delete("/:id", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, commentRepository.delete(req.params.id)];
-                    case 1:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    //logic to return user`s comments by user id
-    commentRouter.get("/author/:authorId", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, commentRepository.findBy({
-                            authorId: +req.params.authorId
-                        })];
-                    case 1:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    // +like
-    commentRouter.get("/:id/like", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var comment, likedComment, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, commentRepository.findOneBy({
-                            id: +req.params.id
-                        })];
-                    case 1:
-                        comment = _a.sent();
-                        likedComment = comment.likesAmount++;
-                        // @ts-ignore
-                        commentRepository.merge(comment, likedComment);
-                        return [4 /*yield*/, commentRepository.save(comment)];
-                    case 2:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    // -like
-    commentRouter.get("/:id/unlike", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var comment, likedComment, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, commentRepository.findOneBy({
-                            id: +req.params.id
-                        })];
-                    case 1:
-                        comment = _a.sent();
-                        likedComment = comment.likesAmount--;
-                        // @ts-ignore
-                        commentRepository.merge(comment, likedComment);
-                        return [4 /*yield*/, commentRepository.save(comment)];
-                    case 2:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
+var commentRepository;
+//logic to return all comments
+commentRouter.get("/", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var comments;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, commentRepository.find()];
+                case 1:
+                    comments = _a.sent();
+                    return [2 /*return*/, res.json(comments)];
+            }
         });
     });
 });
-exports.default = commentRouter;
+//logic to return comment by id
+commentRouter.get("/:id", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, commentRepository.findOneBy({
+                        id: +req.params.id
+                    })];
+                case 1:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+//logic to create and save a comment
+commentRouter.post("/", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var comment, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, commentRepository.create(req.body)];
+                case 1:
+                    comment = _a.sent();
+                    return [4 /*yield*/, commentRepository.save(comment)];
+                case 2:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+// logic to update a comment by a given comment id
+commentRouter.put("/:id", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var comment, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, commentRepository.findOneBy({
+                        id: +req.params.id
+                    })];
+                case 1:
+                    comment = _a.sent();
+                    commentRepository.merge(comment, req.body);
+                    return [4 /*yield*/, commentRepository.save(comment)];
+                case 2:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+//logic to delete a comment by a given comment id
+commentRouter.delete("/:id", authorVerification_1.default, function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, commentRepository.delete(req.params.id)];
+                case 1:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+//logic to return user`s comments by user id
+commentRouter.get("/author/:authorId", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, commentRepository.findBy({
+                        authorId: +req.params.authorId
+                    })];
+                case 1:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+// +like
+commentRouter.get("/:id/like", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var comment, likedComment, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, commentRepository.findOneBy({
+                        id: +req.params.id
+                    })];
+                case 1:
+                    comment = _a.sent();
+                    likedComment = comment.likesAmount++;
+                    // @ts-ignore
+                    commentRepository.merge(comment, likedComment);
+                    return [4 /*yield*/, commentRepository.save(comment)];
+                case 2:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+// -like
+commentRouter.get("/:id/unlike", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var comment, likedComment, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, commentRepository.findOneBy({
+                        id: +req.params.id
+                    })];
+                case 1:
+                    comment = _a.sent();
+                    likedComment = comment.likesAmount--;
+                    // @ts-ignore
+                    commentRepository.merge(comment, likedComment);
+                    return [4 /*yield*/, commentRepository.save(comment)];
+                case 2:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+exports.default = (function () {
+    commentRepository = (0, typeorm_1.getRepository)(Comment_1.Comment);
+    return commentRouter;
+});
 /*fetch('http://localhost:3000/comments', {
     method: 'POST',
     headers: {
         'Accept': 'application/json, text/plain, *!/!*',
         'Content-Type': 'application/json'
     },
-    body: JSON.stringify({"text":"commentText1", "likesAmount":10, "authorId":12, "dateOfCreation":"12.03.22"})
+    body: JSON.stringify({"postId": 5, "text":"commentText1", "likesAmount":10, "authorId":12, "dateOfCreation":"12.03.22"})
 }).then(res => res.json())
     .then(res => console.log(res));*/
 /*fetch('http://localhost:3000/comments/2', {
@@ -200,7 +202,7 @@ exports.default = commentRouter;
         'Accept': 'application/json, text/plain, *!/!*',
         'Content-Type': 'application/json'
     },
-    body: JSON.stringify({"text":"commentText2UPD", "likesAmount":10, "authorId":12, "dateOfCreation":"12.03.22"})
+    body: JSON.stringify({"postId": 5,  "text":"commentText2UPD", "likesAmount":10, "authorId":12, "dateOfCreation":"12.03.22"})
 }).then(res => res.json())
     .then(res => console.log(res))*/
 /*fetch('http://localhost:3000/comments/3', {

@@ -1,12 +1,16 @@
-import 'dotenv/config'
 import {User} from "../entity/User";
 import {Request, Response} from "express";
-import {createConnection} from "typeorm";
+import {getRepository} from "typeorm";
 import {Post} from "../entity/Post";
-import commentRouter from "../entityesMethods/commentMethods";
+import {Comment} from "../entity/Comment";
+require('dotenv').config()
+//import 'dotenv/config'
 
-const jwt = require('jsonwebtoken')
-const config = process.env.JWT_KEY
+const jwt = require('jsonwebtoken');
+const configKey = process.env.JWT_KEY
+
+const secret = 'secret'
+
 
 createConnection().then(connection => {
 
@@ -27,26 +31,45 @@ createConnection().then(connection => {
             if(err){
                 res.status(500).json({
                     success: false,
-                    message: "Token is invalid"
+                    message: "Token is invalid / " + err
                 })
             }
+
             req.body.id = await decoded.id;
+
             const post = await postRepository.findOneBy({
                authorId: +req.params.authorId
+            })
+
+            const comment = await commentRepository.findOneBy({
+                id: +req.params.id
             })
 
             const user = await userRepository.findOneBy({
                id: decoded.id
             })
 
-             if (!(user.id == post.authorId)) {
-                 res.status(500).json({
-                     success: false,
-                     message: "No rights for this action"
-                 })
-             }else {
-                 next()
-             }
+            if (post) {
+                if (!(user.id == post.authorId)) {
+                    return res.status(500).json({
+                        success: false,
+                        message: "No rights for this action"
+                    })
+                }else {
+                    next()
+                }
+            }
+
+            if (comment) {
+                if (!(user.id == comment.authorId)) {
+                    return res.status(500).json({
+                        success: false,
+                        message: "No rights for this action"
+                    })
+                }else {
+                    next()
+                }
+            }
         })
     }
 })
