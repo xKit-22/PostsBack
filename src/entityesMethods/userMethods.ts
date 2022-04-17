@@ -2,7 +2,7 @@ import * as express from "express";
 import {Request, Response} from "express";
 import {createConnection} from "typeorm";
 import {User} from "../entity/User";
-
+const bcrypt = require('bcryptjs');
 
 const userRouter = express.Router();
 
@@ -45,6 +45,32 @@ createConnection().then(connection => {
         const results = await userRepository.delete(req.params.id)
         return res.send(results)
     });
+
+    //logic to change a user`s password by a given user id
+    userRouter.put("/:id/changePassword", async function(req: Request, res: Response){
+        const user = await userRepository.findOneBy({
+            id: +req.params.id
+        })
+        const salt = bcrypt.genSaltSync(10)
+        const currentPassword = user.userPassword
+        const newPassword = req.body.userPassword
+        const passwordResult = bcrypt.compareSync(newPassword, currentPassword)
+
+        if (!passwordResult)
+        {
+            user.userPassword = bcrypt.hashSync(newPassword, salt)
+            const changePassword = user.userPassword
+            // @ts-ignore
+            userRepository.merge(user, changePassword)
+            const results = await userRepository.save(user)
+            return res.send(results)
+        } else {
+            res.status(500).json({                      //Нормальный статус код не придумала
+                success: false,
+                message: 'Enter a password different from the old one'
+            })
+        }
+    })
 
     // +subscriber
     userRouter.get("/:id/addSubscriber", async function(req: Request, res: Response){
@@ -142,6 +168,18 @@ export default userRouter
     },
     body: JSON.stringify({"nickname":"nickname1UPD", "avatar":"avatar1UPD", "postsAmount":10, "subscribersAmount":12,
         "subscriptionsAmount":25, "allLikesAmount": 25, "dateOfCreation": "22.08.2015", "userLogin": "userLogin1UPD", "userPassword": "userPassword1UPD"})
+}).then(res => res.json())
+    .then(res => console.log(res));*/
+
+//Password change test
+
+/*fetch('http://localhost:3000/users/1/changePassword', {
+    method: 'PUT',
+    headers: {
+        'Accept': 'application/json, text/plain, *!/!*',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({"userPassword": "changePassword"})
 }).then(res => res.json())
     .then(res => console.log(res));*/
 

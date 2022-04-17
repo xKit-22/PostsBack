@@ -39,11 +39,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express = require("express");
 var typeorm_1 = require("typeorm");
 var User_1 = require("../entity/User");
-require("dotenv/config");
+require('dotenv').config();
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
 var authRouter = express.Router();
-var jwtKey = 'dev-jwt';
+var secret = 'secret';
 (0, typeorm_1.createConnection)().then(function (connection) {
     var userRepository = connection.getRepository(User_1.User);
     authRouter.post("/login", function (req, res) {
@@ -62,7 +62,8 @@ var jwtKey = 'dev-jwt';
                                 token = jwt.sign({
                                     userLogin: candidate.userLogin,
                                     id: candidate.id
-                                }, process.env.JWT_KEY, { expiresIn: '1h' });
+                                }, secret, { expiresIn: '1h' }) //process.env.JWT_KEY
+                                ;
                                 res.status(200).json({
                                     token: "Bearer ".concat(token)
                                 });
@@ -139,3 +140,4 @@ var jwtKey = 'dev-jwt';
     });
 });
 exports.default = authRouter;
+//      http://localhost:3000/api/auth/login

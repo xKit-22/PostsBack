@@ -11,6 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Comment = void 0;
 var typeorm_1 = require("typeorm");
+var Post_1 = require("./Post");
+var User_1 = require("./User");
 var Comment = /** @class */ (function () {
     function Comment() {
     }
@@ -18,6 +20,10 @@ var Comment = /** @class */ (function () {
         (0, typeorm_1.PrimaryGeneratedColumn)(),
         __metadata("design:type", Number)
     ], Comment.prototype, "id", void 0);
+    __decorate([
+        (0, typeorm_1.Column)(),
+        __metadata("design:type", Number)
+    ], Comment.prototype, "postId", void 0);
     __decorate([
         (0, typeorm_1.Column)(),
         __metadata("design:type", String)
@@ -34,6 +40,14 @@ var Comment = /** @class */ (function () {
         (0, typeorm_1.Column)(),
         __metadata("design:type", String)
     ], Comment.prototype, "dateOfCreation", void 0);
+    __decorate([
+        (0, typeorm_1.ManyToOne)(function (type) { return Post_1.Post; }, function (post) { return post.comments; }),
+        __metadata("design:type", Post_1.Post)
+    ], Comment.prototype, "post", void 0);
+    __decorate([
+        (0, typeorm_1.ManyToOne)(function (type) { return User_1.User; }, function (user) { return user.comments; }),
+        __metadata("design:type", User_1.User)
+    ], Comment.prototype, "user", void 0);
     Comment = __decorate([
         (0, typeorm_1.Entity)()
     ], Comment);

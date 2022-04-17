@@ -1,13 +1,13 @@
 import * as express from "express";
 import {Request, Response} from "express";
-import {createConnection} from "typeorm";
+import {createConnection, getRepository} from "typeorm";
 import {Post} from "../entity/Post";
 import authorVerification from "../authorization/authorVerification";
+import {Comment} from "../entity/Comment";
 
 const postRouter = express.Router();
 
-createConnection().then(connection => {
-    const postRepository = connection.getRepository(Post)
+let postRepository;
 
     // logic to return all posts
     postRouter.get("/", async function(req: Request, res: Response) {
@@ -48,7 +48,6 @@ createConnection().then(connection => {
 
     // logic to return user`s posts by user id
     postRouter.get("/author/:authorId", async function(req: Request, res: Response) {
-
         const results = await postRepository.findBy({
             authorId: +req.params.authorId
         })
@@ -78,10 +77,11 @@ createConnection().then(connection => {
         const results = await postRepository.save(post)
         return res.send(results)
     })
-})
 
-export default postRouter;
-
+export default () => {
+    postRepository = getRepository(Post);
+    return postRouter;
+}
 
 /*
 fetch('http://localhost:3000/posts', {

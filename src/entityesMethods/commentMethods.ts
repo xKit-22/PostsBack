@@ -1,13 +1,11 @@
 import * as express from "express";
 import {Request, Response} from "express";
-import {createConnection} from "typeorm";
+import {createConnection, getRepository} from "typeorm";
 import {Comment} from "../entity/Comment";
 import authorVerification from "../authorization/authorVerification";
 
 const  commentRouter = express.Router();
-
-createConnection().then(connection => {
-    const commentRepository = connection.getRepository(Comment)
+let commentRepository;
 
     //logic to return all comments
     commentRouter.get("/", async function(req: Request, res: Response) {
@@ -79,9 +77,10 @@ createConnection().then(connection => {
         return res.send(results)
     })
 
-})
-
-export default commentRouter;
+export default () => {
+   commentRepository = getRepository(Comment);
+        return commentRouter;
+}
 
 
 /*fetch('http://localhost:3000/comments', {
@@ -90,7 +89,7 @@ export default commentRouter;
         'Accept': 'application/json, text/plain, *!/!*',
         'Content-Type': 'application/json'
     },
-    body: JSON.stringify({"text":"commentText1", "likesAmount":10, "authorId":12, "dateOfCreation":"12.03.22"})
+    body: JSON.stringify({"postId": 5, "text":"commentText1", "likesAmount":10, "authorId":12, "dateOfCreation":"12.03.22"})
 }).then(res => res.json())
     .then(res => console.log(res));*/
 
@@ -100,7 +99,7 @@ export default commentRouter;
         'Accept': 'application/json, text/plain, *!/!*',
         'Content-Type': 'application/json'
     },
-    body: JSON.stringify({"text":"commentText2UPD", "likesAmount":10, "authorId":12, "dateOfCreation":"12.03.22"})
+    body: JSON.stringify({"postId": 5,  "text":"commentText2UPD", "likesAmount":10, "authorId":12, "dateOfCreation":"12.03.22"})
 }).then(res => res.json())
     .then(res => console.log(res))*/
 

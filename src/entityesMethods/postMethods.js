@@ -39,152 +39,154 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express = require("express");
 var typeorm_1 = require("typeorm");
 var Post_1 = require("../entity/Post");
+var authorVerification_1 = require("../authorization/authorVerification");
 var postRouter = express.Router();
-(0, typeorm_1.createConnection)().then(function (connection) {
-    var postRepository = connection.getRepository(Post_1.Post);
-    // logic to return all posts
-    postRouter.get("/", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var posts;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, postRepository.find()];
-                    case 1:
-                        posts = _a.sent();
-                        return [2 /*return*/, res.json(posts)];
-                }
-            });
-        });
-    });
-    // logic to return post by id
-    postRouter.get("/:id", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, postRepository.findOneBy({
-                            id: +req.params.id
-                        })];
-                    case 1:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    // logic to create and save a post
-    postRouter.post("/", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var post, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, postRepository.create(req.body)];
-                    case 1:
-                        post = _a.sent();
-                        return [4 /*yield*/, postRepository.save(post)];
-                    case 2:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    // logic to update a post by a given post id
-    postRouter.put("/:id", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var post, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, postRepository.findOneBy({
-                            id: +req.params.id
-                        })];
-                    case 1:
-                        post = _a.sent();
-                        postRepository.merge(post, req.body);
-                        return [4 /*yield*/, postRepository.save(post)];
-                    case 2:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    // logic to delete a post by a given post id
-    postRouter.delete("/:id", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, postRepository.delete(req.params.id)];
-                    case 1:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    // logic to return user`s posts by user id
-    postRouter.get("/author/:authorId", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, postRepository.findBy({
-                            authorId: +req.params.authorId
-                        })];
-                    case 1:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    // +like
-    postRouter.get("/:id/like", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var post, likedPost, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, postRepository.findOneBy({
-                            id: +req.params.id
-                        })];
-                    case 1:
-                        post = _a.sent();
-                        likedPost = post.likesAmount++;
-                        // @ts-ignore
-                        postRepository.merge(post, likedPost);
-                        return [4 /*yield*/, postRepository.save(post)];
-                    case 2:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    // -like
-    postRouter.get("/:id/unlike", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var post, likedPost, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, postRepository.findOneBy({
-                            id: +req.params.id
-                        })];
-                    case 1:
-                        post = _a.sent();
-                        likedPost = post.likesAmount--;
-                        // @ts-ignore
-                        postRepository.merge(post, likedPost);
-                        return [4 /*yield*/, postRepository.save(post)];
-                    case 2:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
+var postRepository;
+// logic to return all posts
+postRouter.get("/", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var posts;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, postRepository.find()];
+                case 1:
+                    posts = _a.sent();
+                    return [2 /*return*/, res.json(posts)];
+            }
         });
     });
 });
-exports.default = postRouter;
+// logic to return post by id
+postRouter.get("/:id", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, postRepository.findOneBy({
+                        id: +req.params.id
+                    })];
+                case 1:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+// logic to create and save a post
+postRouter.post("/", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var post, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, postRepository.create(req.body)];
+                case 1:
+                    post = _a.sent();
+                    return [4 /*yield*/, postRepository.save(post)];
+                case 2:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+// logic to update a post by a given post id
+postRouter.put("/:id", authorVerification_1.default, function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var post, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, postRepository.findOneBy({
+                        id: +req.params.id
+                    })];
+                case 1:
+                    post = _a.sent();
+                    postRepository.merge(post, req.body);
+                    return [4 /*yield*/, postRepository.save(post)];
+                case 2:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+// logic to delete a post by a given post id
+postRouter.delete("/:id", authorVerification_1.default, function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, postRepository.delete(req.params.id)];
+                case 1:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+// logic to return user`s posts by user id
+postRouter.get("/author/:authorId", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, postRepository.findBy({
+                        authorId: +req.params.authorId
+                    })];
+                case 1:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+// +like
+postRouter.get("/:id/like", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var post, likedPost, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, postRepository.findOneBy({
+                        id: +req.params.id
+                    })];
+                case 1:
+                    post = _a.sent();
+                    likedPost = post.likesAmount++;
+                    // @ts-ignore
+                    postRepository.merge(post, likedPost);
+                    return [4 /*yield*/, postRepository.save(post)];
+                case 2:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+// -like
+postRouter.get("/:id/unlike", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var post, likedPost, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, postRepository.findOneBy({
+                        id: +req.params.id
+                    })];
+                case 1:
+                    post = _a.sent();
+                    likedPost = post.likesAmount--;
+                    // @ts-ignore
+                    postRepository.merge(post, likedPost);
+                    return [4 /*yield*/, postRepository.save(post)];
+                case 2:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+exports.default = (function () {
+    postRepository = (0, typeorm_1.getRepository)(Post_1.Post);
+    return postRouter;
+});
 /*
 fetch('http://localhost:3000/posts', {
     method: 'POST',
