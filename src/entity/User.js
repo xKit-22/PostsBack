@@ -14,15 +14,27 @@ var typeorm_1 = require("typeorm");
 var Post_1 = require("./Post");
 var Comment_1 = require("./Comment");
 var typeorm_2 = require("typeorm");
+var shortid = require('shortid');
 var User = /** @class */ (function () {
     function User() {
     }
     User_1 = User;
+    User.prototype.setId = function () {
+        this.id = shortid.generate();
+    };
     var User_1;
     __decorate([
-        (0, typeorm_1.PrimaryGeneratedColumn)(),
-        __metadata("design:type", Number)
+        (0, typeorm_1.PrimaryColumn)("varchar", {
+            length: 20
+        }),
+        __metadata("design:type", String)
     ], User.prototype, "id", void 0);
+    __decorate([
+        (0, typeorm_1.BeforeInsert)(),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", []),
+        __metadata("design:returntype", void 0)
+    ], User.prototype, "setId", null);
     __decorate([
         (0, typeorm_1.Column)(),
         __metadata("design:type", String)

@@ -16,13 +16,13 @@ let commentRepository;
     //logic to return comment by id
     commentRouter.get("/:id", async function(req: Request, res: Response) {
         const results = await commentRepository.findOneBy({
-            id: +req.params.id
+            id: req.params.id
         })
         return res.send(results)
     });
 
     //logic to create and save a comment
-    commentRouter.post("/", async function(req: Request, res: Response) {
+    commentRouter.post("/", async function(req: Request, res: Response) { // verification
         const comment = await commentRepository.create(req.body)
         const results = await commentRepository.save(comment)
         return res.send(results)
@@ -31,7 +31,7 @@ let commentRepository;
     // logic to update a comment by a given comment id
     commentRouter.put("/:id", authorVerification, async function(req: Request, res: Response) {
         const comment = await commentRepository.findOneBy({
-            id: +req.params.id
+            id: req.params.id
         })
         commentRepository.merge(comment, req.body)
         const results = await commentRepository.save(comment)
@@ -48,30 +48,36 @@ let commentRepository;
     commentRouter.get("/author/:authorId", async function(req: Request, res: Response) {
 
         const results = await commentRepository.findBy({
-            authorId: +req.params.authorId
+            authorId: req.params.authorId
+        })
+        return res.send(results)
+    });
+
+    //logic to return comments by post id
+    commentRouter.get("/post/:postId", async function(req: Request, res: Response) {
+        const results = await commentRepository.findBy({
+            postId: req.params.postId
         })
         return res.send(results)
     });
 
     // +like
-    commentRouter.get("/:id/like", async function(req: Request, res: Response){
+    commentRouter.get("/:id/like", authorVerification, async function(req: Request, res: Response){
         const comment = await commentRepository.findOneBy({
-            id: +req.params.id
+            id: req.params.id
         })
         const likedComment = comment.likesAmount++
-        // @ts-ignore
         commentRepository.merge(comment, likedComment)
         const results = await commentRepository.save(comment)
         return res.send(results)
     })
 
     // -like
-    commentRouter.get("/:id/unlike", async function(req: Request, res: Response){
+    commentRouter.get("/:id/unlike", authorVerification, async function(req: Request, res: Response){
         const comment = await commentRepository.findOneBy({
-            id: +req.params.id
+            id: req.params.id
         })
         const likedComment = comment.likesAmount--
-        // @ts-ignore
         commentRepository.merge(comment, likedComment)
         const results = await commentRepository.save(comment)
         return res.send(results)

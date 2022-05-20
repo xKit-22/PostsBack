@@ -57,9 +57,9 @@ exports.default = (function (req, res, next) {
         });
     }
     jwt.verify(token, secret, function (err, decoded) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, post, comment, user;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+        var post, comment, user, userFromParams;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
                 case 0:
                     if (err) {
                         return [2 /*return*/, res.status(500).json({
@@ -67,46 +67,61 @@ exports.default = (function (req, res, next) {
                                 message: "Token is invalid / " + err
                             })];
                     }
-                    _a = req.body;
-                    return [4 /*yield*/, decoded.id];
-                case 1:
-                    _a.id = _b.sent();
                     return [4 /*yield*/, postRepository.findOneBy({
-                            id: +req.params.id
+                            id: req.params.id
+                        })];
+                case 1:
+                    post = _a.sent();
+                    return [4 /*yield*/, commentRepository.findOneBy({
+                            id: req.params.id
                         })];
                 case 2:
-                    post = _b.sent();
-                    return [4 /*yield*/, commentRepository.findOneBy({
-                            id: +req.params.id
-                        })];
-                case 3:
-                    comment = _b.sent();
+                    comment = _a.sent();
                     return [4 /*yield*/, userRepository.findOneBy({
                             id: decoded.id
                         })];
+                case 3:
+                    user = _a.sent();
+                    return [4 /*yield*/, userRepository.findOneBy({
+                            id: req.params.id
+                        })];
                 case 4:
-                    user = _b.sent();
-                    if (post) {
-                        if (!(user.id == post.authorId)) {
+                    userFromParams = _a.sent();
+                    if (userFromParams) {
+                        if (!(userFromParams.id == user.id)) {
                             return [2 /*return*/, res.status(500).json({
                                     success: false,
-                                    message: "No rights for this action"
+                                    message: "No rights for this action + user "
                                 })];
                         }
                         else {
                             next();
                         }
                     }
-                    if (comment) {
-                        if (!(user.id == comment.authorId)) {
+                    else if (post) {
+                        if (!(user.id == post.authorId)) {
                             return [2 /*return*/, res.status(500).json({
                                     success: false,
-                                    message: "No rights for this action"
+                                    message: "No rights for this action + post "
                                 })];
                         }
                         else {
                             next();
                         }
+                    }
+                    else if (comment) {
+                        if (!(user.id == comment.authorId)) {
+                            return [2 /*return*/, res.status(500).json({
+                                    success: false,
+                                    message: "No rights for this action + comment"
+                                })];
+                        }
+                        else {
+                            next();
+                        }
+                    }
+                    else {
+                        next();
                     }
                     return [2 /*return*/];
             }

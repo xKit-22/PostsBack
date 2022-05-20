@@ -13,13 +13,25 @@ exports.Post = void 0;
 var typeorm_1 = require("typeorm");
 var User_1 = require("./User");
 var Comment_1 = require("./Comment");
+var shortid = require('shortid');
 var Post = /** @class */ (function () {
     function Post() {
     }
+    Post.prototype.setId = function () {
+        this.id = shortid.generate();
+    };
     __decorate([
-        (0, typeorm_1.PrimaryGeneratedColumn)(),
-        __metadata("design:type", Number)
+        (0, typeorm_1.PrimaryColumn)("varchar", {
+            length: 20
+        }),
+        __metadata("design:type", String)
     ], Post.prototype, "id", void 0);
+    __decorate([
+        (0, typeorm_1.BeforeInsert)(),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", []),
+        __metadata("design:returntype", void 0)
+    ], Post.prototype, "setId", null);
     __decorate([
         (0, typeorm_1.Column)(),
         __metadata("design:type", String)
@@ -34,7 +46,7 @@ var Post = /** @class */ (function () {
     ], Post.prototype, "likesAmount", void 0);
     __decorate([
         (0, typeorm_1.Column)(),
-        __metadata("design:type", Number)
+        __metadata("design:type", String)
     ], Post.prototype, "authorId", void 0);
     __decorate([
         (0, typeorm_1.Column)(),

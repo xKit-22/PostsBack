@@ -18,13 +18,13 @@ let postRepository;
     // logic to return post by id
     postRouter.get("/:id", async function(req: Request, res: Response) {
         const results = await postRepository.findOneBy({
-            id: +req.params.id
+            id: req.params.id
         })
         return res.send(results)
     });
 
     // logic to create and save a post
-    postRouter.post("/", async function(req: Request, res: Response) {
+    postRouter.post("/", async function(req: Request, res: Response) {  //verification
         const post = await postRepository.create(req.body)
         const results = await postRepository.save(post)
         return res.send(results)
@@ -33,7 +33,7 @@ let postRepository;
     // logic to update a post by a given post id
     postRouter.put("/:id", authorVerification, async function(req: Request, res: Response) {
         const post = await postRepository.findOneBy({
-            id: +req.params.id
+            id: req.params.id
         })
         postRepository.merge(post, req.body)
         const results = await postRepository.save(post)
@@ -49,30 +49,36 @@ let postRepository;
     // logic to return user`s posts by user id
     postRouter.get("/author/:authorId", async function(req: Request, res: Response) {
         const results = await postRepository.findBy({
-            authorId: +req.params.authorId
+            authorId: req.params.authorId
+        })
+        return res.send(results)
+    });
+
+    // logic to return posts by subscriptions
+    postRouter.get("/feed", async function(req: Request, res: Response) {
+        const results = await postRepository.findBy({
+            authorId: req.params.authorId
         })
         return res.send(results)
     });
 
     // +like
-    postRouter.get("/:id/like", async function(req: Request, res: Response){
+    postRouter.get("/:id/like", authorVerification, async function(req: Request, res: Response){
         const post = await postRepository.findOneBy({
-            id: +req.params.id
+            id: req.params.id
         })
         const likedPost = post.likesAmount++
-        // @ts-ignore
         postRepository.merge(post, likedPost)
         const results = await postRepository.save(post)
         return res.send(results)
     })
 
     // -like
-    postRouter.get("/:id/unlike", async function(req: Request, res: Response){
+    postRouter.get("/:id/unlike", authorVerification, async function(req: Request, res: Response){
         const post = await postRepository.findOneBy({
-            id: +req.params.id
+            id: req.params.id
         })
         const likedPost = post.likesAmount--
-        // @ts-ignore
         postRepository.merge(post, likedPost)
         const results = await postRepository.save(post)
         return res.send(results)

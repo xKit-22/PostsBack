@@ -13,9 +13,7 @@ const authRouter = express.Router();
 
 const secret = 'secret'
 
-
-createConnection().then(connection => {
-    const userRepository = connection.getRepository(User)
+    let userRepository
 
     authRouter.post("/login",  async function(req: Request, res: Response) {
         const candidate = await userRepository.findOneBy({
@@ -67,7 +65,7 @@ createConnection().then(connection => {
             const password = req.body.userPassword
             const user = await userRepository.create({
                 nickname: req.body.nickname,
-                avatar: req.body.avatar,
+                avatar: 'req.body.avatar',
                 postsAmount: 0,
                 subscribersAmount: 0,
                 subscriptionsAmount: 0,
@@ -88,9 +86,12 @@ createConnection().then(connection => {
             }
         }
     })
-})
 
-export default authRouter
+
+export default () => {
+    userRepository = getRepository(User);
+    return authRouter;
+}
 
 
 //      http://localhost:3000/api/auth/login

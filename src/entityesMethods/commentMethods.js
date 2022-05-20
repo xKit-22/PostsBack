@@ -63,7 +63,7 @@ commentRouter.get("/:id", function (req, res) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, commentRepository.findOneBy({
-                        id: +req.params.id
+                        id: req.params.id
                     })];
                 case 1:
                     results = _a.sent();
@@ -90,13 +90,13 @@ commentRouter.post("/", function (req, res) {
     });
 });
 // logic to update a comment by a given comment id
-commentRouter.put("/:id", function (req, res) {
+commentRouter.put("/:id", authorVerification_1.default, function (req, res) {
     return __awaiter(this, void 0, void 0, function () {
         var comment, results;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, commentRepository.findOneBy({
-                        id: +req.params.id
+                        id: req.params.id
                     })];
                 case 1:
                     comment = _a.sent();
@@ -130,7 +130,23 @@ commentRouter.get("/author/:authorId", function (req, res) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, commentRepository.findBy({
-                        authorId: +req.params.authorId
+                        authorId: req.params.authorId
+                    })];
+                case 1:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+//logic to return comments by post id
+commentRouter.get("/post/:postId", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, commentRepository.findBy({
+                        postId: req.params.postId
                     })];
                 case 1:
                     results = _a.sent();
@@ -140,18 +156,17 @@ commentRouter.get("/author/:authorId", function (req, res) {
     });
 });
 // +like
-commentRouter.get("/:id/like", function (req, res) {
+commentRouter.get("/:id/like", authorVerification_1.default, function (req, res) {
     return __awaiter(this, void 0, void 0, function () {
         var comment, likedComment, results;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, commentRepository.findOneBy({
-                        id: +req.params.id
+                        id: req.params.id
                     })];
                 case 1:
                     comment = _a.sent();
                     likedComment = comment.likesAmount++;
-                    // @ts-ignore
                     commentRepository.merge(comment, likedComment);
                     return [4 /*yield*/, commentRepository.save(comment)];
                 case 2:
@@ -162,18 +177,17 @@ commentRouter.get("/:id/like", function (req, res) {
     });
 });
 // -like
-commentRouter.get("/:id/unlike", function (req, res) {
+commentRouter.get("/:id/unlike", authorVerification_1.default, function (req, res) {
     return __awaiter(this, void 0, void 0, function () {
         var comment, likedComment, results;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, commentRepository.findOneBy({
-                        id: +req.params.id
+                        id: req.params.id
                     })];
                 case 1:
                     comment = _a.sent();
                     likedComment = comment.likesAmount--;
-                    // @ts-ignore
                     commentRepository.merge(comment, likedComment);
                     return [4 /*yield*/, commentRepository.save(comment)];
                 case 2:

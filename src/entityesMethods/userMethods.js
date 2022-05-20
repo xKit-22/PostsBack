@@ -39,260 +39,297 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express = require("express");
 var typeorm_1 = require("typeorm");
 var User_1 = require("../entity/User");
+var authorVerification_1 = require("../authorization/authorVerification");
 var bcrypt = require('bcryptjs');
 var userRouter = express.Router();
-(0, typeorm_1.createConnection)().then(function (connection) {
-    var userRepository = connection.getRepository(User_1.User);
-    //logic to return all users
-    userRouter.get("/", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var users;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, userRepository.find()];
-                    case 1:
-                        users = _a.sent();
-                        return [2 /*return*/, res.json(users)];
-                }
-            });
-        });
-    });
-    //logic to return user by id
-    userRouter.get("/:id", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, userRepository.findOneBy({
-                            id: +req.params.id
-                        })];
-                    case 1:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    //logic to create and save a user
-    userRouter.post("/", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var user, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, userRepository.create(req.body)];
-                    case 1:
-                        user = _a.sent();
-                        return [4 /*yield*/, userRepository.save(user)];
-                    case 2:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    // logic to update a user by a given user id
-    userRouter.put("/:id", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var user, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, userRepository.findOneBy({
-                            id: +req.params.id
-                        })];
-                    case 1:
-                        user = _a.sent();
-                        userRepository.merge(user, req.body);
-                        return [4 /*yield*/, userRepository.save(user)];
-                    case 2:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    //logic to delete a user by a given user id
-    userRouter.delete("/:id", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, userRepository.delete(req.params.id)];
-                    case 1:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    //logic to change a user`s password by a given user id
-    userRouter.put("/:id/changePassword", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var user, salt, currentPassword, newPassword, passwordResult, changePassword, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, userRepository.findOneBy({
-                            id: +req.params.id
-                        })];
-                    case 1:
-                        user = _a.sent();
-                        salt = bcrypt.genSaltSync(10);
-                        currentPassword = user.userPassword;
-                        newPassword = req.body.userPassword;
-                        passwordResult = bcrypt.compareSync(newPassword, currentPassword);
-                        if (!!passwordResult) return [3 /*break*/, 3];
-                        user.userPassword = bcrypt.hashSync(newPassword, salt);
-                        changePassword = user.userPassword;
-                        // @ts-ignore
-                        userRepository.merge(user, changePassword);
-                        return [4 /*yield*/, userRepository.save(user)];
-                    case 2:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                    case 3:
-                        res.status(500).json({
-                            success: false,
-                            message: 'Enter a password different from the old one'
-                        });
-                        _a.label = 4;
-                    case 4: return [2 /*return*/];
-                }
-            });
-        });
-    });
-    // +subscriber
-    userRouter.get("/:id/addSubscriber", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var user, changeSubscriber, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, userRepository.findOneBy({
-                            id: +req.params.id
-                        })];
-                    case 1:
-                        user = _a.sent();
-                        changeSubscriber = user.subscribersAmount++;
-                        // @ts-ignore
-                        userRepository.merge(user, changeSubscriber);
-                        return [4 /*yield*/, userRepository.save(user)];
-                    case 2:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    // -subscriber
-    userRouter.get("/:id/removeSubscriber", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var user, changeSubscriber, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, userRepository.findOneBy({
-                            id: +req.params.id
-                        })];
-                    case 1:
-                        user = _a.sent();
-                        changeSubscriber = user.subscribersAmount--;
-                        // @ts-ignore
-                        userRepository.merge(user, changeSubscriber);
-                        return [4 /*yield*/, userRepository.save(user)];
-                    case 2:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    // +subscription
-    userRouter.get("/:id/addSubscription", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var user, changeSubscription, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, userRepository.findOneBy({
-                            id: +req.params.id
-                        })];
-                    case 1:
-                        user = _a.sent();
-                        changeSubscription = user.subscriptionsAmount++;
-                        // @ts-ignore
-                        userRepository.merge(user, changeSubscription);
-                        return [4 /*yield*/, userRepository.save(user)];
-                    case 2:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    // -subscription
-    userRouter.get("/:id/removeSubscription", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var user, changeSubscription, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, userRepository.findOneBy({
-                            id: +req.params.id
-                        })];
-                    case 1:
-                        user = _a.sent();
-                        changeSubscription = user.subscriptionsAmount--;
-                        // @ts-ignore
-                        userRepository.merge(user, changeSubscription);
-                        return [4 /*yield*/, userRepository.save(user)];
-                    case 2:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    // +post
-    userRouter.get("/:id/addPost", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var user, changePostsAmount, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, userRepository.findOneBy({
-                            id: +req.params.id
-                        })];
-                    case 1:
-                        user = _a.sent();
-                        changePostsAmount = user.postsAmount++;
-                        // @ts-ignore
-                        userRepository.merge(user, changePostsAmount);
-                        return [4 /*yield*/, userRepository.save(user)];
-                    case 2:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
-        });
-    });
-    // -post
-    userRouter.get("/:id/removePost", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var user, changePostsAmount, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, userRepository.findOneBy({
-                            id: +req.params.id
-                        })];
-                    case 1:
-                        user = _a.sent();
-                        changePostsAmount = user.postsAmount--;
-                        // @ts-ignore
-                        userRepository.merge(user, changePostsAmount);
-                        return [4 /*yield*/, userRepository.save(user)];
-                    case 2:
-                        results = _a.sent();
-                        return [2 /*return*/, res.send(results)];
-                }
-            });
+var userRepository;
+//logic to return all users
+userRouter.get("/", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var users;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, userRepository.find()];
+                case 1:
+                    users = _a.sent();
+                    return [2 /*return*/, res.json(users)];
+            }
         });
     });
 });
-exports.default = userRouter;
+//logic to return user by id
+userRouter.get("/:id", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, userRepository.findOneBy({
+                        id: req.params.id
+                    })];
+                case 1:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+//logic to create and save a user
+userRouter.post("/", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var user, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, userRepository.create(req.body)];
+                case 1:
+                    user = _a.sent();
+                    return [4 /*yield*/, userRepository.save(user)];
+                case 2:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+// logic to update a user by a given user id
+userRouter.put("/:id", authorVerification_1.default, function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var user, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, userRepository.findOneBy({
+                        id: req.params.id
+                    })];
+                case 1:
+                    user = _a.sent();
+                    userRepository.merge(user, req.body);
+                    return [4 /*yield*/, userRepository.save(user)];
+                case 2:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+//logic to delete a user by a given user id
+userRouter.delete("/:id", authorVerification_1.default, function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, userRepository.delete(req.params.id)];
+                case 1:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+//logic to change a user`s password by a given user id
+userRouter.put("/:id/changePassword", authorVerification_1.default, function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var user, salt, currentPassword, newPassword, passwordResult, changePassword, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, userRepository.findOneBy({
+                        id: req.params.id
+                    })];
+                case 1:
+                    user = _a.sent();
+                    salt = bcrypt.genSaltSync(10);
+                    currentPassword = user.userPassword;
+                    newPassword = req.body.userPassword;
+                    passwordResult = bcrypt.compareSync(newPassword, currentPassword);
+                    if (!!passwordResult) return [3 /*break*/, 3];
+                    user.userPassword = bcrypt.hashSync(newPassword, salt);
+                    changePassword = user.userPassword;
+                    userRepository.merge(user, changePassword);
+                    return [4 /*yield*/, userRepository.save(user)];
+                case 2:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+                case 3:
+                    res.status(500).json({
+                        success: false,
+                        message: 'Enter a password different from the old one'
+                    });
+                    _a.label = 4;
+                case 4: return [2 /*return*/];
+            }
+        });
+    });
+});
+// to subscribe
+userRouter.get("/:id/subscribe", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var user, changeSubscriber, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, userRepository.findOneBy({
+                        id: req.params.id
+                    })];
+                case 1:
+                    user = _a.sent();
+                    changeSubscriber = user.subscribersAmount++;
+                    userRepository.merge(user, changeSubscriber);
+                    return [4 /*yield*/, userRepository.save(user)];
+                case 2:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+// to unsubscribe
+userRouter.get("/:id/unsubscribe", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var user, changeSubscriber, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, userRepository.findOneBy({
+                        id: req.params.id
+                    })];
+                case 1:
+                    user = _a.sent();
+                    changeSubscriber = user.subscribersAmount++;
+                    userRepository.merge(user, changeSubscriber);
+                    return [4 /*yield*/, userRepository.save(user)];
+                case 2:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+// +subscriber
+userRouter.get("/:id/addSubscriber", authorVerification_1.default, function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var user, changeSubscriber, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, userRepository.findOneBy({
+                        id: req.params.id
+                    })];
+                case 1:
+                    user = _a.sent();
+                    changeSubscriber = user.subscribersAmount++;
+                    userRepository.merge(user, changeSubscriber);
+                    return [4 /*yield*/, userRepository.save(user)];
+                case 2:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+// -subscriber
+userRouter.get("/:id/removeSubscriber", authorVerification_1.default, function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var user, changeSubscriber, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, userRepository.findOneBy({
+                        id: req.params.id
+                    })];
+                case 1:
+                    user = _a.sent();
+                    changeSubscriber = user.subscribersAmount--;
+                    userRepository.merge(user, changeSubscriber);
+                    return [4 /*yield*/, userRepository.save(user)];
+                case 2:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+// +subscription
+userRouter.get("/:id/addSubscription", authorVerification_1.default, function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var user, changeSubscription, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, userRepository.findOneBy({
+                        id: req.params.id
+                    })];
+                case 1:
+                    user = _a.sent();
+                    changeSubscription = user.subscriptionsAmount++;
+                    userRepository.merge(user, changeSubscription);
+                    return [4 /*yield*/, userRepository.save(user)];
+                case 2:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+// -subscription
+userRouter.get("/:id/removeSubscription", authorVerification_1.default, function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var user, changeSubscription, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, userRepository.findOneBy({
+                        id: req.params.id
+                    })];
+                case 1:
+                    user = _a.sent();
+                    changeSubscription = user.subscriptionsAmount--;
+                    userRepository.merge(user, changeSubscription);
+                    return [4 /*yield*/, userRepository.save(user)];
+                case 2:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+// +post
+userRouter.get("/:id/addPost", authorVerification_1.default, function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var user, changePostsAmount, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, userRepository.findOneBy({
+                        id: req.params.id
+                    })];
+                case 1:
+                    user = _a.sent();
+                    changePostsAmount = user.postsAmount++;
+                    userRepository.merge(user, changePostsAmount);
+                    return [4 /*yield*/, userRepository.save(user)];
+                case 2:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+// -post
+userRouter.get("/:id/removePost", authorVerification_1.default, function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var user, changePostsAmount, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, userRepository.findOneBy({
+                        id: req.params.id
+                    })];
+                case 1:
+                    user = _a.sent();
+                    changePostsAmount = user.postsAmount--;
+                    userRepository.merge(user, changePostsAmount);
+                    return [4 /*yield*/, userRepository.save(user)];
+                case 2:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+exports.default = (function () {
+    userRepository = (0, typeorm_1.getRepository)(User_1.User);
+    return userRouter;
+});
 /*fetch('http://localhost:3000/users', {
     method: 'POST',
     headers: {
@@ -301,6 +338,15 @@ exports.default = userRouter;
     },
     body: JSON.stringify({"nickname":"nickname1", "avatar":"avatar1", "postsAmount":10, "subscribersAmount":12,
         "subscriptionsAmount":25, "allLikesAmount": 25, "dateOfCreation": "22.08.2015", "userLogin": "userLogin1", "userPassword": "userPassword1"})
+}).then(res => res.json())
+    .then(res => console.log(res));*/
+/*fetch('http://localhost:3000/users', {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json, text/plain, *!/!*',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({"nickname":"nickname1", "avatar":"avatar1", "userLogin": "userLogin1", "userPassword": "userPassword1"})
 }).then(res => res.json())
     .then(res => console.log(res));*/
 /*fetch('http://localhost:3000/users/1', {

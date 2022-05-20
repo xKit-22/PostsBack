@@ -36,14 +36,14 @@ export default (req: Request, res: Response, next) => {
                 })
             }
 
-            req.body.id = await decoded.id;
+        //    req.body.id = await decoded.id;
 
             const post = await postRepository.findOneBy({
-                id: +req.params.id
+                id: req.params.id
             })
 
             const comment = await commentRepository.findOneBy({
-                id: +req.params.id
+                id: req.params.id
             })
 
             const user = await userRepository.findOneBy({
@@ -51,14 +51,14 @@ export default (req: Request, res: Response, next) => {
             })
 
             const userFromParams = await userRepository.findOneBy({
-                id: +req.params.id
+                id: req.params.id
             })
 
             if (userFromParams) {
                 if (!(userFromParams.id == user.id)) {
                     return res.status(500).json({
                         success: false,
-                        message: "No rights for this action"
+                        message: "No rights for this action + user "
                     })
                 }else {
                     next()
@@ -67,7 +67,7 @@ export default (req: Request, res: Response, next) => {
                 if (!(user.id == post.authorId)) {
                     return res.status(500).json({
                         success: false,
-                        message: "No rights for this action"
+                        message: "No rights for this action + post "
                     })
                 }else {
                     next()
@@ -76,7 +76,7 @@ export default (req: Request, res: Response, next) => {
                 if (!(user.id == comment.authorId)) {
                     return res.status(500).json({
                         success: false,
-                        message: "No rights for this action"
+                        message: "No rights for this action + comment"
                     })
                 }else {
                     next()

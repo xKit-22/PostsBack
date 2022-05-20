@@ -1,11 +1,20 @@
-import {Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany} from "typeorm";
+import {Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, PrimaryColumn, BeforeInsert} from "typeorm";
 import {User} from "./User";
 import {Comment} from "./Comment";
 
+const shortid = require('shortid');
+
 @Entity()
 export class Post{
-    @PrimaryGeneratedColumn()
-    id:number
+    @PrimaryColumn("varchar", {
+        length: 20
+    })
+    id: string;
+
+    @BeforeInsert()
+    setId() {
+        this.id = shortid.generate();
+    }
 
     @Column()
     text: string
@@ -17,7 +26,7 @@ export class Post{
     likesAmount: number
 
     @Column()
-    authorId: number
+    authorId: string
 
     @Column()
     dateOfCreation: string

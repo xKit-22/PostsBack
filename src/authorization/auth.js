@@ -44,100 +44,101 @@ var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
 var authRouter = express.Router();
 var secret = 'secret';
-(0, typeorm_1.createConnection)().then(function (connection) {
-    var userRepository = connection.getRepository(User_1.User);
-    authRouter.post("/login", function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var candidate, passwordResult, token;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, userRepository.findOneBy({
-                            userLogin: req.body.userLogin
-                        })];
-                    case 1:
-                        candidate = _a.sent();
-                        if (candidate) {
-                            passwordResult = bcrypt.compareSync(req.body.userPassword, candidate.userPassword);
-                            if (passwordResult) {
-                                token = jwt.sign({
-                                    userLogin: candidate.userLogin,
-                                    id: candidate.id
-                                }, secret, { expiresIn: '1h' }) //process.env.JWT_KEY
-                                ;
-                                res.status(200).json({
-                                    token: "Bearer ".concat(token)
-                                });
-                            }
-                            else {
-                                res.status(401).json({
-                                    message: "Passwords didn't match"
-                                });
-                            }
-                        }
-                        else {
-                            //User not found
-                            res.status(404).json({
-                                message: "User with this login not found"
+var userRepository;
+authRouter.post("/login", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var candidate, passwordResult, token;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, userRepository.findOneBy({
+                        userLogin: req.body.userLogin
+                    })];
+                case 1:
+                    candidate = _a.sent();
+                    if (candidate) {
+                        passwordResult = bcrypt.compareSync(req.body.userPassword, candidate.userPassword);
+                        if (passwordResult) {
+                            token = jwt.sign({
+                                userLogin: candidate.userLogin,
+                                id: candidate.id
+                            }, secret, { expiresIn: '1h' }) //process.env.JWT_KEY
+                            ;
+                            res.status(200).json({
+                                token: "Bearer ".concat(token)
                             });
                         }
-                        return [2 /*return*/];
-                }
-            });
-        });
-    });
-    //logic to registration of user
-    authRouter.post('/register', function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var candidate, salt, password, user, results, e_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, userRepository.findOneBy({
-                            userLogin: req.body.userLogin
-                        })];
-                    case 1:
-                        candidate = _a.sent();
-                        if (!candidate) return [3 /*break*/, 2];
-                        // Error: User exist
-                        res.status(409).json({
-                            message: 'User with this login already exists'
+                        else {
+                            res.status(401).json({
+                                message: "Passwords didn't match"
+                            });
+                        }
+                    }
+                    else {
+                        //User not found
+                        res.status(404).json({
+                            message: "User with this login not found"
                         });
-                        return [3 /*break*/, 7];
-                    case 2:
-                        salt = bcrypt.genSaltSync(10);
-                        password = req.body.userPassword;
-                        return [4 /*yield*/, userRepository.create({
-                                nickname: req.body.nickname,
-                                avatar: req.body.avatar,
-                                postsAmount: 0,
-                                subscribersAmount: 0,
-                                subscriptionsAmount: 0,
-                                allLikesAmount: 0,
-                                dateOfCreation: new Date().toISOString().split('T')[0],
-                                userLogin: req.body.userLogin,
-                                userPassword: bcrypt.hashSync(password, salt)
-                            })];
-                    case 3:
-                        user = _a.sent();
-                        _a.label = 4;
-                    case 4:
-                        _a.trys.push([4, 6, , 7]);
-                        return [4 /*yield*/, userRepository.save(user)];
-                    case 5:
-                        results = _a.sent();
-                        res.status(201).json(results);
-                        return [2 /*return*/, res.send(results)];
-                    case 6:
-                        e_1 = _a.sent();
-                        res.status(500).json({
-                            success: false,
-                            message: e_1.message ? e_1.message : e_1
-                        });
-                        return [3 /*break*/, 7];
-                    case 7: return [2 /*return*/];
-                }
-            });
+                    }
+                    return [2 /*return*/];
+            }
         });
     });
 });
-exports.default = authRouter;
+//logic to registration of user
+authRouter.post('/register', function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var candidate, salt, password, user, results, e_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, userRepository.findOneBy({
+                        userLogin: req.body.userLogin
+                    })];
+                case 1:
+                    candidate = _a.sent();
+                    if (!candidate) return [3 /*break*/, 2];
+                    // Error: User exist
+                    res.status(409).json({
+                        message: 'User with this login already exists'
+                    });
+                    return [3 /*break*/, 7];
+                case 2:
+                    salt = bcrypt.genSaltSync(10);
+                    password = req.body.userPassword;
+                    return [4 /*yield*/, userRepository.create({
+                            nickname: req.body.nickname,
+                            avatar: 'req.body.avatar',
+                            postsAmount: 0,
+                            subscribersAmount: 0,
+                            subscriptionsAmount: 0,
+                            allLikesAmount: 0,
+                            dateOfCreation: new Date().toISOString().split('T')[0],
+                            userLogin: req.body.userLogin,
+                            userPassword: bcrypt.hashSync(password, salt)
+                        })];
+                case 3:
+                    user = _a.sent();
+                    _a.label = 4;
+                case 4:
+                    _a.trys.push([4, 6, , 7]);
+                    return [4 /*yield*/, userRepository.save(user)];
+                case 5:
+                    results = _a.sent();
+                    res.status(201).json(results);
+                    return [2 /*return*/, res.send(results)];
+                case 6:
+                    e_1 = _a.sent();
+                    res.status(500).json({
+                        success: false,
+                        message: e_1.message ? e_1.message : e_1
+                    });
+                    return [3 /*break*/, 7];
+                case 7: return [2 /*return*/];
+            }
+        });
+    });
+});
+exports.default = (function () {
+    userRepository = (0, typeorm_1.getRepository)(User_1.User);
+    return authRouter;
+});
 //      http://localhost:3000/api/auth/login

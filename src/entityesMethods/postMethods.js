@@ -63,7 +63,7 @@ postRouter.get("/:id", function (req, res) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, postRepository.findOneBy({
-                        id: +req.params.id
+                        id: req.params.id
                     })];
                 case 1:
                     results = _a.sent();
@@ -96,7 +96,7 @@ postRouter.put("/:id", authorVerification_1.default, function (req, res) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, postRepository.findOneBy({
-                        id: +req.params.id
+                        id: req.params.id
                     })];
                 case 1:
                     post = _a.sent();
@@ -130,7 +130,23 @@ postRouter.get("/author/:authorId", function (req, res) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, postRepository.findBy({
-                        authorId: +req.params.authorId
+                        authorId: req.params.authorId
+                    })];
+                case 1:
+                    results = _a.sent();
+                    return [2 /*return*/, res.send(results)];
+            }
+        });
+    });
+});
+// logic to return posts by subscriptions
+postRouter.get("/feed", function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, postRepository.findBy({
+                        authorId: req.params.authorId
                     })];
                 case 1:
                     results = _a.sent();
@@ -140,18 +156,17 @@ postRouter.get("/author/:authorId", function (req, res) {
     });
 });
 // +like
-postRouter.get("/:id/like", function (req, res) {
+postRouter.get("/:id/like", authorVerification_1.default, function (req, res) {
     return __awaiter(this, void 0, void 0, function () {
         var post, likedPost, results;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, postRepository.findOneBy({
-                        id: +req.params.id
+                        id: req.params.id
                     })];
                 case 1:
                     post = _a.sent();
                     likedPost = post.likesAmount++;
-                    // @ts-ignore
                     postRepository.merge(post, likedPost);
                     return [4 /*yield*/, postRepository.save(post)];
                 case 2:
@@ -162,18 +177,17 @@ postRouter.get("/:id/like", function (req, res) {
     });
 });
 // -like
-postRouter.get("/:id/unlike", function (req, res) {
+postRouter.get("/:id/unlike", authorVerification_1.default, function (req, res) {
     return __awaiter(this, void 0, void 0, function () {
         var post, likedPost, results;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, postRepository.findOneBy({
-                        id: +req.params.id
+                        id: req.params.id
                     })];
                 case 1:
                     post = _a.sent();
                     likedPost = post.likesAmount--;
-                    // @ts-ignore
                     postRepository.merge(post, likedPost);
                     return [4 /*yield*/, postRepository.save(post)];
                 case 2:

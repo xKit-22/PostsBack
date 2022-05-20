@@ -6,17 +6,20 @@ import userRouter from "./entityesMethods/userMethods";
 import authRouter from "./authorization/auth";
 
 require("dotenv").config()
+const cors = require('cors')
 
 createConnection().then(connection => {
+
     // create and setup express app
     const app = express()
+    app.use(cors())
     app.use(express.json())
 
 
     app.use("/posts", postRouter())
     app.use("/comments", commentRouter())
-    app.use("/users", userRouter)
-    app.use("/api/auth", authRouter)
+    app.use("/users", userRouter())
+    app.use("/api/auth", authRouter())
 
 
     app.listen(3000, () => console.log("start"))

@@ -1,12 +1,21 @@
-import {Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany} from "typeorm";
+import {Entity, Column, OneToMany, ManyToMany, PrimaryColumn, BeforeInsert} from "typeorm";
 import {Post} from "./Post";
 import {Comment} from "./Comment";
 import {JoinTable} from "typeorm";
 
+const shortid = require('shortid');
+
 @Entity('users')
 export class User {
-    @PrimaryGeneratedColumn()
-    id: number
+    @PrimaryColumn("varchar", {
+        length: 20
+    })
+    id: string;
+
+    @BeforeInsert()
+    setId() {
+        this.id = shortid.generate();
+    }
 
     @Column()
     nickname: string
