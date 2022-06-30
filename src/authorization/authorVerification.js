@@ -57,9 +57,9 @@ exports.default = (function (req, res, next) {
         });
     }
     jwt.verify(token, secret, function (err, decoded) { return __awaiter(void 0, void 0, void 0, function () {
-        var post, comment, user, userFromParams;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var _a, post, comment, user, userFromParams;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
                     if (err) {
                         return [2 /*return*/, res.status(500).json({
@@ -67,27 +67,31 @@ exports.default = (function (req, res, next) {
                                 message: "Token is invalid / " + err
                             })];
                     }
+                    _a = req.body;
+                    return [4 /*yield*/, decoded.id];
+                case 1:
+                    _a.currentUserId = _b.sent();
                     return [4 /*yield*/, postRepository.findOneBy({
                             id: req.params.id
                         })];
-                case 1:
-                    post = _a.sent();
+                case 2:
+                    post = _b.sent();
                     return [4 /*yield*/, commentRepository.findOneBy({
                             id: req.params.id
                         })];
-                case 2:
-                    comment = _a.sent();
+                case 3:
+                    comment = _b.sent();
                     return [4 /*yield*/, userRepository.findOneBy({
                             id: decoded.id
                         })];
-                case 3:
-                    user = _a.sent();
+                case 4:
+                    user = _b.sent();
                     return [4 /*yield*/, userRepository.findOneBy({
                             id: req.params.id
                         })];
-                case 4:
-                    userFromParams = _a.sent();
-                    if (userFromParams) {
+                case 5:
+                    userFromParams = _b.sent();
+                    if (req.params.id && userFromParams) {
                         if (!(userFromParams.id == user.id)) {
                             return [2 /*return*/, res.status(500).json({
                                     success: false,
@@ -98,7 +102,7 @@ exports.default = (function (req, res, next) {
                             next();
                         }
                     }
-                    else if (post) {
+                    else if (req.params.id && post) {
                         if (!(user.id == post.authorId)) {
                             return [2 /*return*/, res.status(500).json({
                                     success: false,
@@ -109,7 +113,7 @@ exports.default = (function (req, res, next) {
                             next();
                         }
                     }
-                    else if (comment) {
+                    else if (req.params.id && comment) {
                         if (!(user.id == comment.authorId)) {
                             return [2 /*return*/, res.status(500).json({
                                     success: false,

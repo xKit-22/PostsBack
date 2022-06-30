@@ -13,16 +13,13 @@ exports.User = void 0;
 var typeorm_1 = require("typeorm");
 var Post_1 = require("./Post");
 var Comment_1 = require("./Comment");
-var typeorm_2 = require("typeorm");
 var shortid = require('shortid');
 var User = /** @class */ (function () {
     function User() {
     }
-    User_1 = User;
     User.prototype.setId = function () {
         this.id = shortid.generate();
     };
-    var User_1;
     __decorate([
         (0, typeorm_1.PrimaryColumn)("varchar", {
             length: 20
@@ -79,12 +76,7 @@ var User = /** @class */ (function () {
         (0, typeorm_1.OneToMany)(function (type) { return Comment_1.Comment; }, function (comment) { return comment.user; }),
         __metadata("design:type", Array)
     ], User.prototype, "comments", void 0);
-    __decorate([
-        (0, typeorm_1.ManyToMany)(function (type) { return User_1; }),
-        (0, typeorm_2.JoinTable)(),
-        __metadata("design:type", Array)
-    ], User.prototype, "user", void 0);
-    User = User_1 = __decorate([
+    User = __decorate([
         (0, typeorm_1.Entity)('users')
     ], User);
     return User;

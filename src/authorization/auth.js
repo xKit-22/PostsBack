@@ -64,7 +64,7 @@ authRouter.post("/login", function (req, res) {
                             }, secret, { expiresIn: '1h' }) //process.env.JWT_KEY
                             ;
                             res.status(200).json({
-                                token: "Bearer ".concat(token)
+                                token: token
                             });
                         }
                         else {

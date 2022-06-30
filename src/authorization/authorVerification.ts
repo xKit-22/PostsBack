@@ -36,7 +36,7 @@ export default (req: Request, res: Response, next) => {
                 })
             }
 
-        //    req.body.id = await decoded.id;
+        req.body.currentUserId = await decoded.id;
 
             const post = await postRepository.findOneBy({
                 id: req.params.id
@@ -54,7 +54,7 @@ export default (req: Request, res: Response, next) => {
                 id: req.params.id
             })
 
-            if (userFromParams) {
+            if (req.params.id && userFromParams) {
                 if (!(userFromParams.id == user.id)) {
                     return res.status(500).json({
                         success: false,
@@ -63,7 +63,7 @@ export default (req: Request, res: Response, next) => {
                 }else {
                     next()
                 }
-            } else if (post) {
+            } else if (req.params.id && post) {
                 if (!(user.id == post.authorId)) {
                     return res.status(500).json({
                         success: false,
@@ -72,7 +72,7 @@ export default (req: Request, res: Response, next) => {
                 }else {
                     next()
                 }
-            } else if (comment) {
+            } else if (req.params.id && comment) {
                 if (!(user.id == comment.authorId)) {
                     return res.status(500).json({
                         success: false,

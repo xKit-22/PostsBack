@@ -40,8 +40,37 @@ var express = require("express");
 var typeorm_1 = require("typeorm");
 var Post_1 = require("../entity/Post");
 var authorVerification_1 = require("../authorization/authorVerification");
+var Subscription_1 = require("../entity/Subscription");
 var postRouter = express.Router();
 var postRepository;
+var subscriptionRepository;
+//logic to return posts by subscriptions
+postRouter.get("/feed", authorVerification_1.default, function (req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var subscriptions, subscriptionsId, posts;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    console.log(111);
+                    return [4 /*yield*/, subscriptionRepository.findBy({
+                            subscriberId: req.body.currentUserId
+                        })];
+                case 1:
+                    subscriptions = _a.sent();
+                    console.log(subscriptions, 111);
+                    subscriptionsId = subscriptions.map((function (subscription) { return subscription.whoAreSubscribedToId; }));
+                    console.log(subscriptionsId);
+                    return [4 /*yield*/, postRepository.find({
+                            where: { authorId: (0, typeorm_1.In)(subscriptionsId) },
+                            order: { dateOfCreation: "DESC" },
+                        })];
+                case 2:
+                    posts = _a.sent();
+                    return [2 /*return*/, res.send(posts)];
+            }
+        });
+    });
+});
 // logic to return all posts
 postRouter.get("/", function (req, res) {
     return __awaiter(this, void 0, void 0, function () {
@@ -139,22 +168,6 @@ postRouter.get("/author/:authorId", function (req, res) {
         });
     });
 });
-// logic to return posts by subscriptions
-postRouter.get("/feed", function (req, res) {
-    return __awaiter(this, void 0, void 0, function () {
-        var results;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, postRepository.findBy({
-                        authorId: req.params.authorId
-                    })];
-                case 1:
-                    results = _a.sent();
-                    return [2 /*return*/, res.send(results)];
-            }
-        });
-    });
-});
 // +like
 postRouter.get("/:id/like", authorVerification_1.default, function (req, res) {
     return __awaiter(this, void 0, void 0, function () {
@@ -199,6 +212,7 @@ postRouter.get("/:id/unlike", authorVerification_1.default, function (req, res) 
 });
 exports.default = (function () {
     postRepository = (0, typeorm_1.getRepository)(Post_1.Post);
+    subscriptionRepository = (0, typeorm_1.getRepository)(Subscription_1.Subscription);
     return postRouter;
 });
 /*

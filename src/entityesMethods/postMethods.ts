@@ -1,13 +1,32 @@
 import * as express from "express";
 import {Request, Response} from "express";
-import {createConnection, getRepository} from "typeorm";
+import {createConnection, getRepository, In} from "typeorm";
 import {Post} from "../entity/Post";
 import authorVerification from "../authorization/authorVerification";
 import {Comment} from "../entity/Comment";
+import {Subscription} from "../entity/Subscription";
 
 const postRouter = express.Router();
 
 let postRepository;
+let subscriptionRepository
+
+//logic to return posts by subscriptions
+    postRouter.get("/feed", authorVerification, async function(req: Request, res: Response) {
+        console.log( 111)
+
+        const subscriptions = await subscriptionRepository.findBy({
+            subscriberId: req.body.currentUserId
+        })
+        console.log(subscriptions, 111)
+        const subscriptionsId = subscriptions.map((subscription => subscription.whoAreSubscribedToId))
+        console.log(subscriptionsId)
+        const posts = await postRepository.find({
+            where: { authorId: In(subscriptionsId) },
+            order: { dateOfCreation: "DESC" },
+        });
+        return res.send(posts)
+    });
 
     // logic to return all posts
     postRouter.get("/", async function(req: Request, res: Response) {
@@ -54,13 +73,6 @@ let postRepository;
         return res.send(results)
     });
 
-    // logic to return posts by subscriptions
-    postRouter.get("/feed", async function(req: Request, res: Response) {
-        const results = await postRepository.findBy({
-            authorId: req.params.authorId
-        })
-        return res.send(results)
-    });
 
     // +like
     postRouter.get("/:id/like", authorVerification, async function(req: Request, res: Response){
@@ -86,6 +98,7 @@ let postRepository;
 
 export default () => {
     postRepository = getRepository(Post);
+    subscriptionRepository = getRepository(Subscription)
     return postRouter;
 }
 

@@ -4,11 +4,12 @@ import {createConnection, getRepository} from "typeorm";
 import {User} from "../entity/User";
 import {Post} from "../entity/Post";
 import authorVerification from "../authorization/authorVerification";
+import {Subscription} from "../entity/Subscription";
 const bcrypt = require('bcryptjs');
 
 const userRouter = express.Router();
 
-    let userRepository
+    let userRepository,subscriptionRepository
 
     //logic to return all users
     userRouter.get("/", async function(req: Request, res: Response) {
@@ -72,68 +73,37 @@ const userRouter = express.Router();
         }
     })
 
-    // to subscribe
-    userRouter.get("/:id/subscribe", async function(req: Request, res: Response){ //verification
-        const user = await userRepository.findOneBy({
-            id: req.params.id
-        })
-        const changeSubscriber = user.subscribersAmount++
-        userRepository.merge(user, changeSubscriber)
-        const results = await userRepository.save(user)
-        return res.send(results)
-    })
-
-    // to unsubscribe
-    userRouter.get("/:id/unsubscribe", async function(req: Request, res: Response){ //verification
-        const user = await userRepository.findOneBy({
-            id: req.params.id
-        })
-        const changeSubscriber = user.subscribersAmount++
-        userRepository.merge(user, changeSubscriber)
-        const results = await userRepository.save(user)
-        return res.send(results)
-    })
 
     // +subscriber
-    userRouter.get("/:id/addSubscriber", authorVerification, async function(req: Request, res: Response){
+    userRouter.post("/subscribe", authorVerification, async function(req: Request, res: Response){
         const user = await userRepository.findOneBy({
-            id: req.params.id
+            id: req.body.id
+        })
+        const currentUser = await userRepository.findOneBy({
+            id: req.body.currentUserId
+        })
+
+        const subscription = await subscriptionRepository.create({
+            subscriberId: currentUser.id,
+            whoAreSubscribedToId: user.id
         })
         const changeSubscriber = user.subscribersAmount++
+        const changeSubscription = currentUser.subscriptionsAmount++
         userRepository.merge(user, changeSubscriber)
-        const results = await userRepository.save(user)
-        return res.send(results)
+        userRepository.merge(currentUser, changeSubscription)
+        await subscriptionRepository.save(subscription)
+        await userRepository.save(user)
+        await userRepository.save(currentUser)
+        return res.send(subscription)
     })
 
     // -subscriber
-    userRouter.get("/:id/removeSubscriber",authorVerification, async function(req: Request, res: Response){
+    userRouter.get("/:id/unsubscribe",authorVerification, async function(req: Request, res: Response){
         const user = await userRepository.findOneBy({
             id: req.params.id
         })
         const changeSubscriber = user.subscribersAmount--
         userRepository.merge(user, changeSubscriber)
-        const results = await userRepository.save(user)
-        return res.send(results)
-    })
-
-    // +subscription
-    userRouter.get("/:id/addSubscription", authorVerification, async function(req: Request, res: Response){
-        const user = await userRepository.findOneBy({
-            id: req.params.id
-        })
-        const changeSubscription = user.subscriptionsAmount++
-        userRepository.merge(user, changeSubscription)
-        const results = await userRepository.save(user)
-        return res.send(results)
-    })
-
-    // -subscription
-    userRouter.get("/:id/removeSubscription", authorVerification, async function(req: Request, res: Response){
-        const user = await userRepository.findOneBy({
-            id: req.params.id
-        })
-        const changeSubscription = user.subscriptionsAmount--
-        userRepository.merge(user, changeSubscription)
         const results = await userRepository.save(user)
         return res.send(results)
     })
@@ -162,6 +132,7 @@ const userRouter = express.Router();
 
 export default () => {
     userRepository = getRepository(User);
+    subscriptionRepository = getRepository(Subscription)
     return userRouter;
 }
 

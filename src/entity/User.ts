@@ -46,7 +46,4 @@ export class User {
 
     @OneToMany(type => Post, post => post.user) posts: Post[]
     @OneToMany(type => Comment, comment => comment.user) comments: Comment[]
-
-    @ManyToMany(type => User) @JoinTable()
-    user: User[]
 }

@@ -32,7 +32,7 @@ const secret = 'secret'
                 }, secret , {expiresIn: '1h'}) //process.env.JWT_KEY
 
                 res.status(200).json({
-                    token: `Bearer ${token}`
+                    token: token
                 })
             } else {
                 res.status(401).json({
