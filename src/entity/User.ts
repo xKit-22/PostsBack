@@ -44,6 +44,11 @@ export class User {
     @Column()
     userPassword: string
 
+    @Column({
+        type: 'jsonb'
+    })
+    likedPosts: string[]
+
     @OneToMany(type => Post, post => post.user) posts: Post[]
     @OneToMany(type => Comment, comment => comment.user) comments: Comment[]
 }

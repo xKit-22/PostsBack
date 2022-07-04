@@ -102,17 +102,16 @@ exports.default = (function (req, res, next) {
                             next();
                         }
                     }
-                    else if (req.params.id && post) {
+                    /*else if (req.params.id && post) {
                         if (!(user.id == post.authorId)) {
-                            return [2 /*return*/, res.status(500).json({
-                                    success: false,
-                                    message: "No rights for this action + post "
-                                })];
+                            return res.status(500).json({
+                                success: false,
+                                message: "No rights for this action + post "
+                            })
+                        }else {
+                            next()
                         }
-                        else {
-                            next();
-                        }
-                    }
+                    } */
                     else if (req.params.id && comment) {
                         if (!(user.id == comment.authorId)) {
                             return [2 /*return*/, res.status(500).json({

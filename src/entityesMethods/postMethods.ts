@@ -5,11 +5,13 @@ import {Post} from "../entity/Post";
 import authorVerification from "../authorization/authorVerification";
 import {Comment} from "../entity/Comment";
 import {Subscription} from "../entity/Subscription";
+import {User} from "../entity/User";
 
 const postRouter = express.Router();
 
 let postRepository;
 let subscriptionRepository
+let userRepository
 
 //logic to return posts by subscriptions
     postRouter.get("/feed", authorVerification, async function(req: Request, res: Response) {
@@ -79,8 +81,13 @@ let subscriptionRepository
         const post = await postRepository.findOneBy({
             id: req.params.id
         })
+        const currentUser = await userRepository.findOneBy({
+            id: req.body.currentUserId
+        })
+        currentUser.likedPosts.push(post.id)
         const likedPost = post.likesAmount++
         postRepository.merge(post, likedPost)
+        await userRepository.save(currentUser)
         const results = await postRepository.save(post)
         return res.send(results)
     })
@@ -90,14 +97,22 @@ let subscriptionRepository
         const post = await postRepository.findOneBy({
             id: req.params.id
         })
+        const currentUser = await userRepository.findOneBy({
+            id: req.body.currentUserId
+        })
+        currentUser.likedPosts = currentUser.likedPosts.filter(e => {
+            return e != post.id
+        })
         const likedPost = post.likesAmount--
         postRepository.merge(post, likedPost)
+        await userRepository.save(currentUser)
         const results = await postRepository.save(post)
         return res.send(results)
     })
 
 export default () => {
     postRepository = getRepository(Post);
+    userRepository = getRepository(User),
     subscriptionRepository = getRepository(Subscription)
     return postRouter;
 }

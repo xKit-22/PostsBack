@@ -63,7 +63,8 @@ export default (req: Request, res: Response, next) => {
                 }else {
                     next()
                 }
-            } else if (req.params.id && post) {
+            }
+            /*else if (req.params.id && post) {
                 if (!(user.id == post.authorId)) {
                     return res.status(500).json({
                         success: false,
@@ -72,7 +73,8 @@ export default (req: Request, res: Response, next) => {
                 }else {
                     next()
                 }
-            } else if (req.params.id && comment) {
+            } */
+            else if (req.params.id && comment) {
                 if (!(user.id == comment.authorId)) {
                     return res.status(500).json({
                         success: false,

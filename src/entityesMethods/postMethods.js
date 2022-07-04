@@ -41,9 +41,11 @@ var typeorm_1 = require("typeorm");
 var Post_1 = require("../entity/Post");
 var authorVerification_1 = require("../authorization/authorVerification");
 var Subscription_1 = require("../entity/Subscription");
+var User_1 = require("../entity/User");
 var postRouter = express.Router();
 var postRepository;
 var subscriptionRepository;
+var userRepository;
 //logic to return posts by subscriptions
 postRouter.get("/feed", authorVerification_1.default, function (req, res) {
     return __awaiter(this, void 0, void 0, function () {
@@ -171,7 +173,7 @@ postRouter.get("/author/:authorId", function (req, res) {
 // +like
 postRouter.get("/:id/like", authorVerification_1.default, function (req, res) {
     return __awaiter(this, void 0, void 0, function () {
-        var post, likedPost, results;
+        var post, currentUser, likedPost, results;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, postRepository.findOneBy({
@@ -179,10 +181,19 @@ postRouter.get("/:id/like", authorVerification_1.default, function (req, res) {
                     })];
                 case 1:
                     post = _a.sent();
+                    return [4 /*yield*/, userRepository.findOneBy({
+                            id: req.body.currentUserId
+                        })];
+                case 2:
+                    currentUser = _a.sent();
+                    currentUser.likedPosts.push(post.id);
                     likedPost = post.likesAmount++;
                     postRepository.merge(post, likedPost);
+                    return [4 /*yield*/, userRepository.save(currentUser)];
+                case 3:
+                    _a.sent();
                     return [4 /*yield*/, postRepository.save(post)];
-                case 2:
+                case 4:
                     results = _a.sent();
                     return [2 /*return*/, res.send(results)];
             }
@@ -192,7 +203,7 @@ postRouter.get("/:id/like", authorVerification_1.default, function (req, res) {
 // -like
 postRouter.get("/:id/unlike", authorVerification_1.default, function (req, res) {
     return __awaiter(this, void 0, void 0, function () {
-        var post, likedPost, results;
+        var post, currentUser, likedPost, results;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, postRepository.findOneBy({
@@ -200,10 +211,21 @@ postRouter.get("/:id/unlike", authorVerification_1.default, function (req, res) 
                     })];
                 case 1:
                     post = _a.sent();
+                    return [4 /*yield*/, userRepository.findOneBy({
+                            id: req.body.currentUserId
+                        })];
+                case 2:
+                    currentUser = _a.sent();
+                    currentUser.likedPosts = currentUser.likedPosts.filter(function (e) {
+                        return e != post.id;
+                    });
                     likedPost = post.likesAmount--;
                     postRepository.merge(post, likedPost);
+                    return [4 /*yield*/, userRepository.save(currentUser)];
+                case 3:
+                    _a.sent();
                     return [4 /*yield*/, postRepository.save(post)];
-                case 2:
+                case 4:
                     results = _a.sent();
                     return [2 /*return*/, res.send(results)];
             }
@@ -212,7 +234,8 @@ postRouter.get("/:id/unlike", authorVerification_1.default, function (req, res) 
 });
 exports.default = (function () {
     postRepository = (0, typeorm_1.getRepository)(Post_1.Post);
-    subscriptionRepository = (0, typeorm_1.getRepository)(Subscription_1.Subscription);
+    userRepository = (0, typeorm_1.getRepository)(User_1.User),
+        subscriptionRepository = (0, typeorm_1.getRepository)(Subscription_1.Subscription);
     return postRouter;
 });
 /*

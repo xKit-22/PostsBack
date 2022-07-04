@@ -61,7 +61,7 @@ authRouter.post("/login", function (req, res) {
                             token = jwt.sign({
                                 userLogin: candidate.userLogin,
                                 id: candidate.id
-                            }, secret, { expiresIn: '1h' }) //process.env.JWT_KEY
+                            }, secret, { expiresIn: '10h' }) //process.env.JWT_KEY
                             ;
                             res.status(200).json({
                                 token: token
@@ -113,7 +113,8 @@ authRouter.post('/register', function (req, res) {
                             allLikesAmount: 0,
                             dateOfCreation: new Date().toISOString().split('T')[0],
                             userLogin: req.body.userLogin,
-                            userPassword: bcrypt.hashSync(password, salt)
+                            userPassword: bcrypt.hashSync(password, salt),
+                            likedPosts: []
                         })];
                 case 3:
                     user = _a.sent();
